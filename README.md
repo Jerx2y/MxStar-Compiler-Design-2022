@@ -1,2 +1,4 @@
-# Compiler-Design-2022
-ACM Class - 2022 Homework
+# Mx* Compiler Design 2022
+
+### 进度
+- [ ] 完成 g4
