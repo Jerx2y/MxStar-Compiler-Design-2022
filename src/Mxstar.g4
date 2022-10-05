@@ -1,5 +1,117 @@
 grammar Mxstar;
 
+// Expressions
+
+// TODO: Lambda
+
+lambdaExpression:
+	lambdaIntroducer lambdaDeclarator Arrow compoundStatement ;
+
+lambdaIntroducer: LBrack And? RBrack;
+
+lambdaDeclarator:
+	LParen parameterDeclarationClause? RParen;
+
+primaryExpression:
+	literal
+	| This
+	| Identifier
+	| LeftParen expression RightParen
+	| lambdaExpression;
+
+literal: IntLiteral | StringLiteral | BoolLiteral;
+
+selfExpression:
+    primaryExpression
+    | selfExpression (AddAdd | SubSub | Dot);
+
+unaryExpression:
+	primaryExpression | (AddAdd | SubSub | unaryOperator) unaryExpression;
+
+unaryOperator:
+    Or | Mul | And | Add | Tilde | Sub | Not;
+
+multiplicativeExpression:
+	unaryExpression ( (Mul | Div | Mod) unaryExpression )*;
+
+additiveExpression:
+	multiplicativeExpression ( (Add | Sub) multiplicativeExpression )*;
+
+shiftExpression:
+	additiveExpression (shiftOperator additiveExpression)*;
+
+shiftOperator: LShift | Rshift;
+
+relationalExpression:
+	shiftExpression ( (Less | Greater | LessEqual | GreaterEqual) shiftExpression )*;
+
+equalityExpression:
+	relationalExpression ( (EqualEqual | NotEqual) relationalExpression )*;
+
+andExpression: equalityExpression (And equalityExpression)*;
+
+exclusiveOrExpression: andExpression (Caret andExpression)*;
+
+inclusiveOrExpression:
+	exclusiveOrExpression (Or exclusiveOrExpression)*;
+
+logicalAndExpression:
+	inclusiveOrExpression (AndAnd inclusiveOrExpression)*;
+
+logicalOrExpression:
+	logicalAndExpression (OrOr logicalAndExpression)*;
+
+assignmentExpression:
+	logicalOrExpression (Assign assignmentExpression)?;
+
+expression: assignmentExpression;
+
+// statements
+
+statement:
+    varDeclaration
+    | expressionStatement
+    | compoundStatement
+    | selectionStatement
+    | iterationStatement
+    | jumpStatement;
+
+expressionStatement: expression? Semi;
+
+compoundStatement: LBrace statementSeq? RBrace;
+
+statementSeq: statement+;
+
+selectionStatement: If LParen condition RParen statement (Else statement)?;
+
+condition: expression;
+
+iterationStatement:
+	While LParen condition RParen statement
+	| For LParen ( forInitStatement condition? Semi expression? ) RParen statement;
+
+forInitStatement: expressionStatement | varDeclaration;
+
+jumpStatement: ( Break | Continue | Return expression? ) Semi;
+
+varDeclaration: typename varElement (Comma varElement)* Semi;
+
+varElement: Identifier (Assign expression)?;
+
+funcDefinition: (typename | Void) Identifier funcParameter compoundStatement;
+
+funcParameter: LParen funcParameterList? RParen;
+
+funcParameterList: typename varElement (Comma typename varElement)*;
+
+classDefinition : Class Identifier LBrace (varDeclaration | classConstruction | funcDefinition)* RBrace Semi;
+
+classConstruction: Identifier LParen RParen compoundStatement;
+
+typename: Int | Bool | String | Identifier;
+
+// Lexer
+
 // Char Set
 Add : '+';
 Sub : '-';
@@ -11,15 +123,15 @@ Less : '<';
 LessEqual : '<=';
 Greater : '>';
 GreaterEqual : '>=';
-Equal : '==';
+EqualEqual : '==';
 NotEqual : '!=';
 
 AndAnd : '&&';
 OrOr : '||';
 Not : '!';
 
-LeftShift : '<<';
-RightShift : '>>';
+LShift : '<<';
+Rshift : '>>';
 And : '&';
 Or : '|';
 Caret : '^';
@@ -81,10 +193,10 @@ LineComment
     ;
 
 // Identifier
-Identifier : [a-zA-Z] [a-zA-Z_0-9]*; // TODO : Range
+Identifier : [a-zA-Z] [a-zA-Z_0-9]*;                          // TODO : Range
 
 // Constant
 BoolLiteral : False | True;
-IntLiteral : [1-9] [0-9]* | '0' ; // TODO: Range
-StringLiteral : '"' (ESC|.)*? '"';
+IntLiteral : [1-9] [0-9]* | '0' ;                             // TODO: Range
+StringLiteral : '"' (ESC|.)*? '"';                            // TODO: Range
 fragment ESC : '\\"' | '\\\\';
