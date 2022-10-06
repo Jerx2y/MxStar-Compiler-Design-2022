@@ -1,32 +1,35 @@
 grammar Mxstar;
 
-// Expressions
 
-// TODO: Lambda
+program: (varDeclaration | classDefinition | funcDefinition)* mainFunction (varDeclaration | classDefinition | funcDefinition)*;
 
-lambdaExpression:
-	lambdaIntroducer lambdaDeclarator Arrow compoundStatement ;
+mainFunction: Int 'main' LParen RParen compoundStatement;
 
-lambdaIntroducer: LBrack And? RBrack;
-
-lambdaDeclarator:
-	LParen parameterDeclarationClause? RParen;
+// expressions
 
 primaryExpression:
 	literal
 	| This
-	| Identifier
-	| LeftParen expression RightParen
+	| Identifier ( funcCall | arrayParameter )?
+	| LParen expression RParen
 	| lambdaExpression;
 
 literal: IntLiteral | StringLiteral | BoolLiteral;
 
+funcCall: LParen ( expression (Comma expression)* )? RParen;
+
+arrayParameter: (LBrack expression RBrack)+;
+
+lambdaExpression:
+	lambdaIntroducer funcParameter Arrow compoundStatement;
+
+lambdaIntroducer: LBrack And? RBrack;
+
 selfExpression:
-    primaryExpression
-    | selfExpression (AddAdd | SubSub | Dot);
+    primaryExpression (AddAdd | SubSub | Dot Identifier)?;
 
 unaryExpression:
-	primaryExpression | (AddAdd | SubSub | unaryOperator) unaryExpression;
+	selfExpression | (AddAdd | SubSub | unaryOperator) unaryExpression;
 
 unaryOperator:
     Or | Mul | And | Add | Tilde | Sub | Not;
@@ -93,6 +96,8 @@ iterationStatement:
 forInitStatement: expressionStatement | varDeclaration;
 
 jumpStatement: ( Break | Continue | Return expression? ) Semi;
+
+// declarations
 
 varDeclaration: typename varElement (Comma varElement)* Semi;
 
@@ -175,22 +180,11 @@ Return : 'return';
 Arrow : '->';
 
 // White Char
-Whitespace
-    :   [ \t]+
-        -> skip
-    ;
-Newline
-    :   (   '\r' '\n'?
-        |   '\n'
-        )
-        -> skip
-    ;
+Whitespace : [ \t]+ -> skip ;
+Newline : ( '\r' '\n'? | '\n' ) -> skip;
 
 // Comment
-LineComment
-    :   '//' ~[\r\n]*
-        -> skip
-    ;
+LineComment : '//' ~[\r\n]* -> skip;
 
 // Identifier
 Identifier : [a-zA-Z] [a-zA-Z_0-9]*;                          // TODO : Range
