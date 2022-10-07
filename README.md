@@ -1,4 +1,7 @@
 # Mx* Compiler Design 2022
 
 ### 进度
-- [ ] 完成 g4
+- [x] 完成 g4
+
+### [笔记](https://github.com/ACMClassCourses/Compiler-Design-Implementation)
+

@@ -1,7 +1,6 @@
 grammar Mxstar;
 
-
-program: (varDeclaration | classDefinition | funcDefinition)* mainFunction (varDeclaration | classDefinition | funcDefinition)*;
+program: (varDeclaration | classDefinition | funcDefinition)* mainFunction (varDeclaration | classDefinition | funcDefinition)*  EOF;
 
 mainFunction: Int 'main' LParen RParen compoundStatement;
 
@@ -10,29 +9,33 @@ mainFunction: Int 'main' LParen RParen compoundStatement;
 primaryExpression:
 	literal
 	| This
-	| Identifier ( funcCall | arrayParameter )?
+	| Null
+	| Identifier ( funCall | arrayParameter )?
 	| LParen expression RParen
-	| lambdaExpression;
+	| lambdaExpression
+	| newArray
+	| newClass;
 
-literal: IntLiteral | StringLiteral | BoolLiteral;
+literal: IntLiteral | StringLiteral | False | True;
 
-funcCall: LParen ( expression (Comma expression)* )? RParen;
+funCall: LParen ( expression (Comma expression)* )? RParen;
 
-arrayParameter: (LBrack expression RBrack)+;
+arrayParameter: (LBrack expression? RBrack)+;
+
+newArray: New typename arrayParameter;
+
+newClass: New Identifier (LParen RParen)?;
 
 lambdaExpression:
-	lambdaIntroducer funcParameter Arrow compoundStatement;
+	lambdaIntroducer funcParameter Arrow compoundStatement funCall;
 
 lambdaIntroducer: LBrack And? RBrack;
 
 selfExpression:
-    primaryExpression (AddAdd | SubSub | Dot Identifier)?;
+    primaryExpression | (primaryExpression ( AddAdd | SubSub | Dot selfExpression ) );
 
 unaryExpression:
-	selfExpression | (AddAdd | SubSub | unaryOperator) unaryExpression;
-
-unaryOperator:
-    Or | Mul | And | Add | Tilde | Sub | Not;
+	selfExpression | ( (AddAdd | SubSub | Not | Tilde | Sub | Add) unaryExpression );
 
 multiplicativeExpression:
 	unaryExpression ( (Mul | Div | Mod) unaryExpression )*;
@@ -41,9 +44,7 @@ additiveExpression:
 	multiplicativeExpression ( (Add | Sub) multiplicativeExpression )*;
 
 shiftExpression:
-	additiveExpression (shiftOperator additiveExpression)*;
-
-shiftOperator: LShift | Rshift;
+	additiveExpression ( (LShift | Rshift) additiveExpression )*;
 
 relationalExpression:
 	shiftExpression ( (Less | Greater | LessEqual | GreaterEqual) shiftExpression )*;
@@ -65,7 +66,7 @@ logicalOrExpression:
 	logicalAndExpression (OrOr logicalAndExpression)*;
 
 assignmentExpression:
-	logicalOrExpression (Assign assignmentExpression)?;
+	logicalOrExpression (Assign logicalOrExpression)?;
 
 expression: assignmentExpression;
 
@@ -99,21 +100,21 @@ jumpStatement: ( Break | Continue | Return expression? ) Semi;
 
 // declarations
 
-varDeclaration: typename varElement (Comma varElement)* Semi;
+varDeclaration: typename declarationElement (Comma declarationElement)* Semi;
 
-varElement: Identifier (Assign expression)?;
+declarationElement: Identifier (Assign expression)?;
 
 funcDefinition: (typename | Void) Identifier funcParameter compoundStatement;
 
 funcParameter: LParen funcParameterList? RParen;
 
-funcParameterList: typename varElement (Comma typename varElement)*;
+funcParameterList: typename Identifier (Comma typename Identifier)*;
 
 classDefinition : Class Identifier LBrace (varDeclaration | classConstruction | funcDefinition)* RBrace Semi;
 
 classConstruction: Identifier LParen RParen compoundStatement;
 
-typename: Int | Bool | String | Identifier;
+typename: (Int | Bool | String | Identifier) arrayParameter?;
 
 // Lexer
 
@@ -185,12 +186,13 @@ Newline : ( '\r' '\n'? | '\n' ) -> skip;
 
 // Comment
 LineComment : '//' ~[\r\n]* -> skip;
+BlockComment : '/*' .*? '*/' -> skip;
+
 
 // Identifier
 Identifier : [a-zA-Z] [a-zA-Z_0-9]*;                          // TODO : Range
 
 // Constant
-BoolLiteral : False | True;
 IntLiteral : [1-9] [0-9]* | '0' ;                             // TODO: Range
 StringLiteral : '"' (ESC|.)*? '"';                            // TODO: Range
 fragment ESC : '\\"' | '\\\\';
