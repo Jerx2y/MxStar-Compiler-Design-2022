@@ -27,7 +27,7 @@ newArray: New typename arrayParameter;
 newClass: New Identifier (LParen RParen)?;
 
 lambdaExpression:
-	lambdaIntroducer funcParameter Arrow compoundStatement funCall;
+	lambdaIntroducer funcParameter? Arrow compoundStatement funCall;
 
 lambdaIntroducer: LBrack And? RBrack;
 
@@ -188,11 +188,10 @@ Newline : ( '\r' '\n'? | '\n' ) -> skip;
 LineComment : '//' ~[\r\n]* -> skip;
 BlockComment : '/*' .*? '*/' -> skip;
 
-
 // Identifier
-Identifier : [a-zA-Z] [a-zA-Z_0-9]*;                          // TODO : Range
+Identifier : [a-zA-Z] [a-zA-Z_0-9]*;
 
 // Constant
 IntLiteral : [1-9] [0-9]* | '0' ;                             // TODO: Range
 StringLiteral : '"' (ESC|.)*? '"';                            // TODO: Range
-fragment ESC : '\\"' | '\\\\';
+fragment ESC : '\\"' | '\\\\' | '\\n';
