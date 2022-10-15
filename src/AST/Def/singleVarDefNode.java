@@ -1,22 +1,20 @@
 package AST.Def;
 
 import AST.ASTVisitor;
-import AST.Stmt.StmtNode;
+import AST.Expr.ExprNode;
 import Util.Type;
 import Util.position;
 
-public class funcDefNode extends DefNode {
+public class singleVarDefNode extends DefNode {
     Type type;
     String identifier;
-    varDefNode parameter;
-    StmtNode stmts;
+    ExprNode initExpr;
 
-    funcDefNode(Type type, String identifier, varDefNode parameter, StmtNode stmts, position pos) {
+    singleVarDefNode(Type type, String identifier, ExprNode initExpr, position pos) {
         super(pos);
         this.type = type;
         this.identifier = identifier;
-        this.parameter = parameter;
-        this.stmts = stmts;
+        this.initExpr = initExpr;
     }
 
     @Override

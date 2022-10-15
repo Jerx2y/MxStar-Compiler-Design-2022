@@ -1,6 +1,6 @@
-grammar Mxstar;
+grammar Mx;
 
-program: (varDeclaration | classDefinition | funcDefinition)* mainFunction (varDeclaration | classDefinition | funcDefinition)*  EOF;
+program: (varDeclaration | classDefinition | funcDefinition)* mainFunction  EOF;
 
 mainFunction: Int 'main' LParen RParen compoundStatement;
 
@@ -10,7 +10,7 @@ primaryExpression:
 	literal
 	| This
 	| Null
-	| Identifier ( funCall | arrayParameter )?
+	| Identifier ( funCallParameter | arrayParameter )?
 	| LParen expression RParen
 	| lambdaExpression
 	| newArray
@@ -18,7 +18,7 @@ primaryExpression:
 
 literal: IntLiteral | StringLiteral | False | True;
 
-funCall: LParen ( expression (Comma expression)* )? RParen;
+funCallParameter: LParen ( expression (Comma expression)* )? RParen;
 
 arrayParameter: (LBrack expression? RBrack)+;
 
@@ -27,12 +27,10 @@ newArray: New typename arrayParameter;
 newClass: New Identifier (LParen RParen)?;
 
 lambdaExpression:
-	lambdaIntroducer funcParameter? Arrow compoundStatement funCall;
-
-lambdaIntroducer: LBrack And? RBrack;
+	LBrack And? RBrack funcParameter? Arrow compoundStatement funCallParameter;
 
 selfExpression:
-    primaryExpression | (primaryExpression ( AddAdd | SubSub | Dot selfExpression ) );
+    primaryExpression ( AddAdd | SubSub | Dot primaryExpression )?;
 
 unaryExpression:
 	selfExpression | ( (AddAdd | SubSub | Not | Tilde | Sub | Add) unaryExpression );
