@@ -5,10 +5,11 @@ import AST.Expr.ExprNode;
 import Util.position;
 
 public class forStmtNode extends StmtNode {
-    ExprNode initial, condition, step;
+    ExprNode condition, step;
+    StmtNode initial;
     StmtNode stmt;
 
-    public forStmtNode(ExprNode initial, ExprNode condition, ExprNode step, StmtNode stmt, position pos) {
+    public forStmtNode(StmtNode initial, ExprNode condition, ExprNode step, StmtNode stmt, position pos) {
         super(pos);
         this.initial = initial;
         this.condition = condition;

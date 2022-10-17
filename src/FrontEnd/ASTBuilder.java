@@ -3,6 +3,7 @@ package FrontEnd;
 import AST.*;
 import AST.Def.*;
 import AST.Expr.ExprNode;
+import AST.Expr.literalExprNode;
 import AST.Stmt.*;
 import Parser.MxBaseVisitor;
 import Parser.MxParser;
@@ -69,6 +70,21 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
 
     // Statement
 
+    @Override public ASTNode visitStatement(MxParser.StatementContext ctx) {
+        if (!ctx.varDeclaration().isEmpty())
+            return visit(ctx.varDeclaration());
+        else if (!ctx.expressionStatement().isEmpty())
+            return visit(ctx.expressionStatement());
+        else if (!ctx.compoundStatement().isEmpty())
+            return visit(ctx.compoundStatement());
+        else if (!ctx.selectionStatement().isEmpty())
+            return visit(ctx.selectionStatement());
+        else if (!ctx.iterationStatement().isEmpty())
+            return visit(ctx.iterationStatement());
+        else if (!ctx.jumpStatement().isEmpty())
+            return visit(ctx.jumpStatement());
+    }
+
     @Override public ASTNode visitCompoundStatement(MxParser.CompoundStatementContext ctx) {
         if (ctx.statement().isEmpty()) return null;
         compoundStmtNode node = new compoundStmtNode(new position(ctx));
@@ -76,13 +92,46 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
         return node;
     }
 
-    @Override public
-
-    @Override public ASTNode visit() {
-        ;
+    @Override public ASTNode visitIterationStatement(MxParser.IterationStatementContext ctx) {
+        if (ctx.For() != null) {
+            StmtNode initial = (StmtNode) visit(ctx.forInitStatement());
+            ExprNode step = (ExprNode) visit(ctx.expression());
+            ExprNode condition;
+            if (ctx.condition().isEmpty())
+                condition = new literalExprNode(true, new position(ctx.condition()));
+            else condition = (ExprNode) visit(ctx.condition());
+            return new forStmtNode(initial, condition, step, (StmtNode) visit(ctx.statement()), new position(ctx));
+        } else return new whileStmtNode((ExprNode) visit(ctx.condition()), (StmtNode) visit(ctx.statement()), new position(ctx));
     }
 
-    @Override public ASTNode visit() {
+    @Override public ASTNode visitForInitStatement(MxParser.ForInitStatementContext ctx) {
+        if (!ctx.expressionStatement().isEmpty())
+            return visit(ctx.expressionStatement());
+        else return visit(ctx.varDeclaration());
+    }
 
+    @Override public ASTNode visitSelectionStatement(MxParser.SelectionStatementContext ctx) {
+        ExprNode condition = (ExprNode) visit(ctx.condition());
+        StmtNode thenstmt = (StmtNode) visit(ctx.statement(0)), elsestmt = null;
+        if (ctx.Else() != null)
+            elsestmt = (StmtNode) visit(ctx.statement(1));
+        return new ifStmtNode(condition, thenstmt, elsestmt, new position(ctx));
+    }
+
+    @Override public ASTNode visitJumpStatement(MxParser.JumpStatementContext ctx) {
+        if (ctx.Return() != null)
+            return new returnStmtNode((ExprNode) visit(ctx.expression()), new position(ctx));
+        else return new flowStmtNode(ctx.Break() != null, new position(ctx));
+    }
+
+    @Override public ASTNode visitExpressionStatement(MxParser.ExpressionStatementContext ctx) {
+        if (!ctx.expression().isEmpty())
+            return new exprStmtNode(null, new position(ctx));
+        else return new exprStmtNode((ExprNode) visit(ctx.expression()), new position(ctx));
+    }
+
+    // Expression
+
+    @Override public ASTNode visitExpression(MxParser.ExpressionContext ctx) {
     }
 }

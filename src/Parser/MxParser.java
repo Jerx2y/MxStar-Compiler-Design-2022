@@ -2425,6 +2425,7 @@ public class MxParser extends Parser {
 			case While:
 				enterOuterAlt(_localctx, 1);
 				{
+				{
 				setState(295);
 				match(While);
 				setState(296);
@@ -2436,9 +2437,11 @@ public class MxParser extends Parser {
 				setState(299);
 				statement();
 				}
+				}
 				break;
 			case For:
 				enterOuterAlt(_localctx, 2);
+				{
 				{
 				setState(301);
 				match(For);
@@ -2474,6 +2477,7 @@ public class MxParser extends Parser {
 				match(RParen);
 				setState(312);
 				statement();
+				}
 				}
 				break;
 			default:

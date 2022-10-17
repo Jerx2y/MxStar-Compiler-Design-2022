@@ -90,8 +90,8 @@ selectionStatement: If LParen condition RParen statement (Else statement)?;
 condition: expression;
 
 iterationStatement:
-	While LParen condition RParen statement
-	| For LParen ( forInitStatement condition? Semi expression? ) RParen statement;
+	(While LParen condition RParen statement)
+	| (For LParen ( forInitStatement condition? Semi expression? ) RParen statement);
 
 forInitStatement: expressionStatement | varDeclaration;
 
