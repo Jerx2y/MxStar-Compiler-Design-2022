@@ -10,11 +10,18 @@ public class singleVarDefNode extends DefNode {
     String identifier;
     ExprNode initExpr;
 
-    singleVarDefNode(Type type, String identifier, ExprNode initExpr, position pos) {
+    public singleVarDefNode(Type type, String identifier, ExprNode initExpr, position pos) {
         super(pos);
         this.type = type;
         this.identifier = identifier;
         this.initExpr = initExpr;
+    }
+
+    public singleVarDefNode(Type type, String identifier, position pos) {
+        super(pos);
+        this.type = type;
+        this.identifier = identifier;
+        this.initExpr = null;
     }
 
     @Override

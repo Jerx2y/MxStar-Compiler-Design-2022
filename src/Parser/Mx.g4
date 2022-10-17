@@ -1,24 +1,24 @@
 grammar Mx;
 
-program: (varDeclaration | classDefinition | funcDefinition)* mainFunction  EOF;
-
-mainFunction: Int 'main' LParen RParen compoundStatement;
+program: (varDeclaration | classDefinition | funcDefinition)* EOF;
 
 // expressions
 
 primaryExpression:
-	literal
-	| This
-	| Null
-	| Identifier ( funCallParameter | arrayParameter )?
-	| LParen expression RParen
-	| lambdaExpression
-	| newArray
-	| newClass;
+	literal                           # LiteralExpr
+	| This                            # VarExpr
+	| Null                            # VarExpr
+	| Identifier                      # VarExpr
+	| Identifier funcallParameter     # FuncExpr
+	| primaryExpression arrayParameter       # ArrayExpr
+	| LParen expression RParen        # ParenEpxr
+	| lambdaExpression                # LambdaExpr
+	| newArray                        # NewExpr
+	| newClass                        # NewExpr;
 
 literal: IntLiteral | StringLiteral | False | True;
 
-funCallParameter: LParen ( expression (Comma expression)* )? RParen;
+funcallParameter: LParen ( expression (Comma expression)* )? RParen;
 
 arrayParameter: (LBrack expression? RBrack)+;
 
@@ -27,10 +27,13 @@ newArray: New typename arrayParameter;
 newClass: New Identifier (LParen RParen)?;
 
 lambdaExpression:
-	LBrack And? RBrack funcParameter? Arrow compoundStatement funCallParameter;
+	LBrack And? RBrack funcParameter? Arrow compoundStatement funcallParameter;
+
+memberExpression:
+    primaryExpression ( Dot Identifier (funcallParameter | arrayParameter) )?;
 
 selfExpression:
-    primaryExpression ( AddAdd | SubSub | Dot primaryExpression )?;
+    memberExpression (AddAdd | SubSub)?;
 
 unaryExpression:
 	selfExpression | ( (AddAdd | SubSub | Not | Tilde | Sub | Add) unaryExpression );
@@ -80,9 +83,7 @@ statement:
 
 expressionStatement: expression? Semi;
 
-compoundStatement: LBrace statementSeq? RBrace;
-
-statementSeq: statement+;
+compoundStatement: LBrace statement* RBrace;
 
 selectionStatement: If LParen condition RParen statement (Else statement)?;
 

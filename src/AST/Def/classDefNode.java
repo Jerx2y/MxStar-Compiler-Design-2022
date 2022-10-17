@@ -1,18 +1,21 @@
 package AST.Def;
 
 import AST.ASTVisitor;
+import AST.Stmt.StmtNode;
 import Util.Type;
 import Util.position;
 
 import java.util.ArrayList;
 
 public class classDefNode extends DefNode {
-    String identifier;
-    ArrayList<varDefNode> varDefs;
-    ArrayList<funcDefNode> funcDefs;
+    public String identifier;
+    public ArrayList<varDefNode> varDecs;
+    public ArrayList<funcDefNode> funcDefs;
+    public StmtNode constructor;
 
-    classDefNode(position pos) {
+    public classDefNode(position pos, String identifier) {
         super(pos);
+        this.identifier = identifier;
     }
 
     @Override

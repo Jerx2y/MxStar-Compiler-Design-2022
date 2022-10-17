@@ -17,17 +17,54 @@ public interface MxVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitProgram(MxParser.ProgramContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link MxParser#mainFunction}.
+	 * Visit a parse tree produced by the {@code ArrayExpr}
+	 * labeled alternative in {@link MxParser#primaryExpression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitMainFunction(MxParser.MainFunctionContext ctx);
+	T visitArrayExpr(MxParser.ArrayExprContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link MxParser#primaryExpression}.
+	 * Visit a parse tree produced by the {@code LambdaExpr}
+	 * labeled alternative in {@link MxParser#primaryExpression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitPrimaryExpression(MxParser.PrimaryExpressionContext ctx);
+	T visitLambdaExpr(MxParser.LambdaExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code NewExpr}
+	 * labeled alternative in {@link MxParser#primaryExpression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNewExpr(MxParser.NewExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code LiteralExpr}
+	 * labeled alternative in {@link MxParser#primaryExpression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLiteralExpr(MxParser.LiteralExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code VarExpr}
+	 * labeled alternative in {@link MxParser#primaryExpression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVarExpr(MxParser.VarExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code ParenEpxr}
+	 * labeled alternative in {@link MxParser#primaryExpression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParenEpxr(MxParser.ParenEpxrContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code FuncExpr}
+	 * labeled alternative in {@link MxParser#primaryExpression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFuncExpr(MxParser.FuncExprContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MxParser#literal}.
 	 * @param ctx the parse tree
@@ -35,11 +72,11 @@ public interface MxVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitLiteral(MxParser.LiteralContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link MxParser#funCallParameter}.
+	 * Visit a parse tree produced by {@link MxParser#funcallParameter}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitFunCallParameter(MxParser.FunCallParameterContext ctx);
+	T visitFuncallParameter(MxParser.FuncallParameterContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MxParser#arrayParameter}.
 	 * @param ctx the parse tree
@@ -64,6 +101,12 @@ public interface MxVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitLambdaExpression(MxParser.LambdaExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MxParser#memberExpression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMemberExpression(MxParser.MemberExpressionContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MxParser#selfExpression}.
 	 * @param ctx the parse tree
@@ -166,12 +209,6 @@ public interface MxVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitCompoundStatement(MxParser.CompoundStatementContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link MxParser#statementSeq}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitStatementSeq(MxParser.StatementSeqContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MxParser#selectionStatement}.
 	 * @param ctx the parse tree

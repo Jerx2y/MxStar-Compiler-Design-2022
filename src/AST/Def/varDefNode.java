@@ -8,9 +8,9 @@ import Util.position;
 import java.util.ArrayList;
 
 public class varDefNode extends DefNode {
-    ArrayList<singleVarDefNode> singleVarDefs;
+    public ArrayList<singleVarDefNode> singleVarDefs;
 
-    varDefNode(position pos) {
+    public varDefNode(position pos) {
         super(pos);
         singleVarDefs = new ArrayList<>();
     }

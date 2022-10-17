@@ -6,7 +6,6 @@ import Util.position;
 import java.util.ArrayList;
 
 public class RootNode extends ASTNode {
-    public funcDefNode mainDef;
     public ArrayList<classDefNode> classDefs = new ArrayList<>();
     public ArrayList<funcDefNode> funcDefs = new ArrayList<>();
     public ArrayList<varDefNode> varDecs = new ArrayList<>();

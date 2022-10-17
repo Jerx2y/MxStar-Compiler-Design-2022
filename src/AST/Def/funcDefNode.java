@@ -4,6 +4,9 @@ import AST.ASTVisitor;
 import AST.Stmt.StmtNode;
 import Util.Type;
 import Util.position;
+import org.antlr.v4.runtime.misc.Pair;
+
+import java.util.ArrayList;
 
 public class funcDefNode extends DefNode {
     Type type;
@@ -11,7 +14,7 @@ public class funcDefNode extends DefNode {
     varDefNode parameter;
     StmtNode stmts;
 
-    funcDefNode(Type type, String identifier, varDefNode parameter, StmtNode stmts, position pos) {
+    public funcDefNode(Type type, String identifier, varDefNode parameter, StmtNode stmts, position pos) {
         super(pos);
         this.type = type;
         this.identifier = identifier;
