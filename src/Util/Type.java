@@ -34,7 +34,6 @@ public class Type {
     public Type(MxParser.TypenameContext ctx) {
         BuiltinType basetype;
         String classname = null;
-        int dimension;
         if (ctx.Int() != null) basetype = BuiltinType.INT;
         else if (ctx.Bool() != null) basetype = BuiltinType.BOOL;
         else if (ctx.String() != null) basetype = BuiltinType.STRING;
@@ -42,10 +41,8 @@ public class Type {
             basetype = BuiltinType.CLASS;
             classname = ctx.Identifier().getText();
         }
-        if (ctx.arrayParameter().isEmpty()) dimension = 0;
-        else dimension = ctx.arrayParameter().LBrack().size();
         this.basicType = basetype;
         this.className = classname;
-        this.dimension = dimension;
+        this.dimension = ctx.LBrack().size();
     }
 }

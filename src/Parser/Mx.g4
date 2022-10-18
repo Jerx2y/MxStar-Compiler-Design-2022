@@ -5,32 +5,30 @@ program: (varDeclaration | classDefinition | funcDefinition)* EOF;
 // expressions
 
 primaryExpression:
-	literal                           # LiteralExpr
-	| This                            # VarExpr
-	| Null                            # VarExpr
-	| Identifier                      # VarExpr
-	| Identifier funcallParameter     # FuncExpr
-	| primaryExpression arrayParameter       # ArrayExpr
-	| LParen expression RParen        # ParenEpxr
-	| lambdaExpression                # LambdaExpr
-	| newArray                        # NewExpr
-	| newClass                        # NewExpr;
+	literal
+	| This
+	| Identifier
+	| LParen expression RParen
+	| funcExpression
+	| arrayExpression
+	| lambdaExpression
+	| newExpression;
 
-literal: IntLiteral | StringLiteral | False | True;
+literal: IntLiteral | StringLiteral | False | True | Null;
+
+funcExpression: Identifier funcallParameter;
 
 funcallParameter: LParen ( expression (Comma expression)* )? RParen;
 
-arrayParameter: (LBrack expression? RBrack)+;
+arrayExpression: (newExpression | Identifier) (LBrack expression RBrack)+;
 
-newArray: New typename arrayParameter;
-
-newClass: New Identifier (LParen RParen)?;
+newExpression: New typename (LParen RParen)?;
 
 lambdaExpression:
 	LBrack And? RBrack funcParameter? Arrow compoundStatement funcallParameter;
 
 memberExpression:
-    primaryExpression ( Dot Identifier (funcallParameter | arrayParameter) )?;
+    primaryExpression ( Dot (Identifier | funcExpression | arrayExpression) )?;
 
 selfExpression:
     memberExpression (AddAdd | SubSub)?;
@@ -39,35 +37,31 @@ unaryExpression:
 	selfExpression | ( (AddAdd | SubSub | Not | Tilde | Sub | Add) unaryExpression );
 
 multiplicativeExpression:
-	unaryExpression ( (Mul | Div | Mod) unaryExpression )*;
+	unaryExpression ( (Mul | Div | Mod) multiplicativeExpression)?;
 
 additiveExpression:
-	multiplicativeExpression ( (Add | Sub) multiplicativeExpression )*;
+	multiplicativeExpression ( (Add | Sub) additiveExpression )?;
 
 shiftExpression:
-	additiveExpression ( (LShift | Rshift) additiveExpression )*;
+	additiveExpression ( (LShift | Rshift) shiftExpression )?;
 
 relationalExpression:
-	shiftExpression ( (Less | Greater | LessEqual | GreaterEqual) shiftExpression )*;
+	shiftExpression ( (Less | Greater | LessEqual | GreaterEqual) relationalExpression )?;
 
 equalityExpression:
-	relationalExpression ( (EqualEqual | NotEqual) relationalExpression )*;
+	relationalExpression ( (EqualEqual | NotEqual) equalityExpression )?;
 
-andExpression: equalityExpression (And equalityExpression)*;
+andExpression: equalityExpression (And andExpression)?;
 
-exclusiveOrExpression: andExpression (Caret andExpression)*;
+xorExpression: andExpression (Caret xorExpression)?;
 
-inclusiveOrExpression:
-	exclusiveOrExpression (Or exclusiveOrExpression)*;
+orExpression: xorExpression (Or orExpression)?;
 
-logicalAndExpression:
-	inclusiveOrExpression (AndAnd inclusiveOrExpression)*;
+logicalAndExpression: orExpression (AndAnd logicalAndExpression)?;
 
-logicalOrExpression:
-	logicalAndExpression (OrOr logicalAndExpression)*;
+logicalOrExpression: logicalAndExpression (OrOr logicalOrExpression)?;
 
-assignmentExpression:
-	logicalOrExpression (Assign logicalOrExpression)?;
+assignmentExpression: logicalOrExpression (Assign logicalOrExpression)?;
 
 expression: assignmentExpression;
 
@@ -113,7 +107,7 @@ classDefinition : Class Identifier LBrace (varDeclaration | classConstruction | 
 
 classConstruction: Identifier LParen RParen compoundStatement;
 
-typename: (Int | Bool | String | Identifier) arrayParameter?;
+typename: (Int | Bool | String | Identifier) (LBrack expression? RBrack)*;
 
 // Lexer
 

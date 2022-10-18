@@ -9,16 +9,17 @@ public class literalExprNode extends ExprNode {
     int intVal;
     boolean boolVal;
     String stringVal;
+    boolean isNull = false;
 
 
     public literalExprNode(boolean boolval, position pos) {
         super(pos);
         this.boolVal = boolval;
-        ;
+        this.type = new Type(Type.BuiltinType.BOOL);
     }
 
-    public literalExprNode(MxParser.LiteralContext ctx, position pos) {
-        super(pos);
+    public literalExprNode(MxParser.LiteralContext ctx) {
+        super(new position(ctx));
         if (ctx.IntLiteral() != null) {
             type = new Type(Type.BuiltinType.INT);
             intVal = Integer.parseInt(ctx.IntLiteral().toString());
@@ -35,6 +36,9 @@ public class literalExprNode extends ExprNode {
         if (ctx.False() != null) {
             type = new Type(Type.BuiltinType.BOOL);
             boolVal = false;
+        }
+        if (ctx.Null() != null) {
+            isNull = true;
         }
     }
 

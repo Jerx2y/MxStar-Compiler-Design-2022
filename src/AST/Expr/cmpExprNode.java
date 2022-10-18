@@ -11,12 +11,11 @@ public class cmpExprNode extends ExprNode {
     }
     public cmpOpType opCode;
 
-    public cmpExprNode(ExprNode lhs, ExprNode rhs, cmpOpType opCode, Type boolType, position pos) {
+    public cmpExprNode(ExprNode lhs, ExprNode rhs, cmpOpType opCode, position pos) {
         super(pos);
         this.lhs = lhs;
         this.rhs = rhs;
         this.opCode = opCode;
-        this.type = Type.BuiltinType.BOOL;
     }
 
     @Override

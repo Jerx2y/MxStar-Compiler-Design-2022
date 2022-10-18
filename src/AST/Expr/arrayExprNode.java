@@ -3,16 +3,13 @@ package AST.Expr;
 import AST.ASTVisitor;
 import Util.position;
 
-import java.util.ArrayList;
+public class arrayExprNode extends ExprNode {
+    ExprNode caller, index;
 
-public class funcExprNode extends ExprNode {
-    String caller;
-    public ArrayList<ExprNode> exprs;
-
-    public funcExprNode(String caller, position pos) {
+    public arrayExprNode(ExprNode caller, ExprNode index, position pos) {
         super(pos);
         this.caller = caller;
-        exprs = new ArrayList<>();
+        this.index = index;
     }
 
     @Override
