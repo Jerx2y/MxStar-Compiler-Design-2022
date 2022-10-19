@@ -5,7 +5,7 @@
 ### 进度
 - [x] g4
 - [x] ASTNode Design 
-- [ ] ASTBuilder
+- [x] ASTBuilder
+- [x] SymbolCollector
 - [ ] SementicChecker
-- [ ] SymbolCollector
 

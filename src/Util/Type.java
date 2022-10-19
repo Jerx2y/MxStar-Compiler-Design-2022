@@ -6,10 +6,9 @@ import java.util.HashMap;
 
 public class Type {
     public enum BuiltinType{INT, BOOL, STRING, CLASS, VOID};
+    public BuiltinType basicType;
     public String className = null;
     int dimension = 0;
-    public BuiltinType basicType;
-    // public HashMap<String, Type> members = null;
 
     public Type(BuiltinType type) {
         this.basicType = type;

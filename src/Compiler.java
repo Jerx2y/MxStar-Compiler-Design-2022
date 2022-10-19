@@ -1,7 +1,11 @@
 import AST.RootNode;
+import FrontEnd.ASTBuilder;
+import FrontEnd.SemanticChecker;
+import FrontEnd.SymbolCollector;
 import Parser.MxLexer;
 import Parser.MxParser;
 import Util.MxErrorListener;
+import Util.Scope.globalScope;
 import Util.error.error;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;

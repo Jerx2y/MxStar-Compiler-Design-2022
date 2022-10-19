@@ -1,4 +1,4 @@
-package Util.scope;
+package Util.Scope;
 
 // import MIR.register;
 import Util.Type;

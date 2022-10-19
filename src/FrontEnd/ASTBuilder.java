@@ -8,7 +8,7 @@ import Parser.MxBaseVisitor;
 import Parser.MxParser;
 import Util.Type;
 import Util.error.syntaxError;
-import Util.scope.*;
+import Util.Scope.*;
 import Util.position;
 
 public class ASTBuilder extends MxBaseVisitor<ASTNode> {
@@ -81,6 +81,7 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
             return visit(ctx.iterationStatement());
         else if (!ctx.jumpStatement().isEmpty())
             return visit(ctx.jumpStatement());
+        else return null;
     }
 
     @Override public ASTNode visitCompoundStatement(MxParser.CompoundStatementContext ctx) {
@@ -298,6 +299,7 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
             return visit(ctx.lambdaExpression());
         else if (ctx.newExpression() != null)
             return visit(ctx.newExpression());
+        return null;
     }
 
 }
