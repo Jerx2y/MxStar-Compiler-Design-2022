@@ -4,7 +4,7 @@ import AST.ASTVisitor;
 import Util.position;
 
 public class arrayExprNode extends ExprNode {
-    ExprNode caller, index;
+    public ExprNode caller, index;
 
     public arrayExprNode(ExprNode caller, ExprNode index, position pos) {
         super(pos);

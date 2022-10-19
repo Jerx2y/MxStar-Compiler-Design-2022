@@ -4,7 +4,7 @@ import AST.ASTVisitor;
 import Util.position;
 
 public class flowStmtNode extends StmtNode {
-    boolean isbreak; // break or continue
+    public boolean isbreak; // break or continue
 
     public flowStmtNode(boolean isbreak, position pos) {
         super(pos);

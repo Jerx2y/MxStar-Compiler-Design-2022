@@ -9,7 +9,7 @@ public class funcDefNode extends DefNode {
     public Type type;
     public String identifier;
     public varDefNode parameter;
-    StmtNode stmts;
+    public StmtNode stmts;
 
     public funcDefNode(Type type, String identifier, varDefNode parameter, StmtNode stmts, position pos) {
         super(pos);

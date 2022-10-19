@@ -22,12 +22,12 @@ public class SymbolCollector implements ASTVisitor {
     public void visit(DefNode it) {}
     public void visit(classDefNode it) {
         classInfo ci = new classInfo();
-        it.varDecs.forEach(vd -> vd.singleVarDefs.forEach(svd -> ci.vars.put(svd.identifier, svd.type)));
+        it.varDecs.forEach(vd -> vd.singleVarDefs.forEach(svd -> ci.addVar(svd.identifier, svd.type, svd.pos)));
         for (funcDefNode fd : it.funcDefs) {
             funcInfo fi = new funcInfo();
             fi.ret = fd.type;
             fd.parameter.singleVarDefs.forEach(svd -> fi.para.add(svd.type));
-            ci.funcs.put(fd.identifier, fi);
+            ci.addFunc(fd.identifier, fi, fd.pos);
         }
         gScope.addClass(it.identifier, ci, it.pos);
     }

@@ -18,8 +18,7 @@ public class SemanticChecker implements ASTVisitor {
 
     @Override
     public void visit(RootNode it) {
-        it.classDefs.forEach();
-        it.funcDefs.forEach();
+        ;
     }
 
     public void visit(DefNode it) {}

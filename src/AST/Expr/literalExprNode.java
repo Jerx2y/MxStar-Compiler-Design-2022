@@ -6,10 +6,10 @@ import Util.Type;
 import Util.position;
 
 public class literalExprNode extends ExprNode {
-    int intVal;
-    boolean boolVal;
-    String stringVal;
-    boolean isNull = false;
+    public int intVal;
+    public boolean boolVal;
+    public String stringVal;
+    public boolean isNull = false;
 
 
     public literalExprNode(boolean boolval, position pos) {

@@ -8,9 +8,9 @@ import Util.position;
 import java.util.ArrayList;
 
 public class lambdaExprNode extends ExprNode {
-    boolean haveAnd;
-    varDefNode parameter;
-    StmtNode stmts;
+    public boolean haveAnd;
+    public varDefNode parameter;
+    public StmtNode stmts;
     public ArrayList<ExprNode> exprs;
 
     public lambdaExprNode(boolean haveAnd, varDefNode paramter, StmtNode stmts, position pos) {

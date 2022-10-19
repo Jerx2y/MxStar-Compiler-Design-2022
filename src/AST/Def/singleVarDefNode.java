@@ -8,7 +8,7 @@ import Util.position;
 public class singleVarDefNode extends DefNode {
     public Type type;
     public String identifier;
-    ExprNode initExpr;
+    public ExprNode initExpr;
 
     public singleVarDefNode(Type type, String identifier, ExprNode initExpr, position pos) {
         super(pos);

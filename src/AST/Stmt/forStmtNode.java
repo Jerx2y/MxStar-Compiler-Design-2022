@@ -5,9 +5,9 @@ import AST.Expr.ExprNode;
 import Util.position;
 
 public class forStmtNode extends StmtNode {
-    ExprNode condition, step;
-    StmtNode initial;
-    StmtNode stmt;
+    public ExprNode condition, step;
+    public StmtNode initial;
+    public StmtNode stmt;
 
     public forStmtNode(StmtNode initial, ExprNode condition, ExprNode step, StmtNode stmt, position pos) {
         super(pos);
