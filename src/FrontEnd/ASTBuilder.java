@@ -23,10 +23,8 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
     @Override public ASTNode visitProgram(MxParser.ProgramContext ctx) {
         RootNode root = new RootNode(new position(ctx));
 
-        ctx.classDefinition().forEach(cd -> root.classDefs.add((classDefNode) visit(cd)));
-        ctx.funcDefinition().forEach(fd -> root.funcDefs.add((funcDefNode) visit(fd)));
-        ctx.varDeclaration().forEach(vd -> root.varDecs.add((varDefNode) visit(vd)));
-
+        ctx.def().forEach(def -> root.defs.add((DefNode) visit(def)));
+        
         return root;
     }
 

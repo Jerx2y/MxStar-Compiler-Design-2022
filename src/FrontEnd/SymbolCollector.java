@@ -15,8 +15,10 @@ public class SymbolCollector implements ASTVisitor {
     }
     @Override
     public void visit(RootNode it) {
-        it.classDefs.forEach(cd -> cd.accept(this));
-        it.funcDefs.forEach(fd -> fd.accept(this));
+        for (DefNode def : it.defs) {
+            if (def instanceof classDefNode || def instanceof funcDefNode)
+                def.accept(this);
+        }
     }
 
     public void visit(DefNode it) {}

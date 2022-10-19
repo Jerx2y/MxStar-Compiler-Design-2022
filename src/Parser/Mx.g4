@@ -1,6 +1,8 @@
 grammar Mx;
 
-program: (varDeclaration | classDefinition | funcDefinition)* EOF;
+program: def* EOF;
+
+def: (varDeclaration | classDefinition | funcDefinition);
 
 // expressions
 
