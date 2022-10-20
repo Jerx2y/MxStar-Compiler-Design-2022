@@ -38,6 +38,7 @@ public class literalExprNode extends ExprNode {
             boolVal = false;
         }
         if (ctx.Null() != null) {
+            type = new Type(Type.BuiltinType.NULL);
             isNull = true;
         }
     }

@@ -11,10 +11,9 @@ primaryExpression:
 	| This
 	| Identifier
 	| LParen expression RParen
+	| newExpression
 	| funcExpression
-	| arrayExpression
-	| lambdaExpression
-	| newExpression;
+	| lambdaExpression;
 
 literal: IntLiteral | StringLiteral | False | True | Null;
 
@@ -22,15 +21,16 @@ funcExpression: Identifier funcallParameter;
 
 funcallParameter: LParen ( expression (Comma expression)* )? RParen;
 
-arrayExpression: (newExpression | Identifier) (LBrack expression RBrack)+;
-
 newExpression: New typename (LParen RParen)?;
 
 lambdaExpression:
 	LBrack And? RBrack funcParameter? Arrow compoundStatement funcallParameter;
 
+arrayExpression:
+    primaryExpression (LBrack expression RBrack)*;
+
 memberExpression:
-    primaryExpression ( Dot (Identifier | funcExpression | arrayExpression) )?;
+    arrayExpression (Dot arrayExpression)*;
 
 selfExpression:
     memberExpression (AddAdd | SubSub)?;
@@ -39,29 +39,39 @@ unaryExpression:
 	selfExpression | ( (AddAdd | SubSub | Not | Tilde | Sub | Add) unaryExpression );
 
 multiplicativeExpression:
-	unaryExpression ( (Mul | Div | Mod) multiplicativeExpression)?;
+	unaryExpression (multiplicativeOperator unaryExpression)*;
+
+multiplicativeOperator: Mul | Div | Mod;
 
 additiveExpression:
-	multiplicativeExpression ( (Add | Sub) additiveExpression )?;
+	multiplicativeExpression (additiveOperator multiplicativeExpression)*;
+
+additiveOperator: Add | Sub;
 
 shiftExpression:
-	additiveExpression ( (LShift | Rshift) shiftExpression )?;
+	additiveExpression (shiftOperator additiveExpression)*;
+
+shiftOperator: LShift | Rshift;
 
 relationalExpression:
-	shiftExpression ( (Less | Greater | LessEqual | GreaterEqual) relationalExpression )?;
+	shiftExpression (relationalOperator shiftExpression)*;
+
+relationalOperator: Less | Greater | LessEqual | GreaterEqual;
 
 equalityExpression:
-	relationalExpression ( (EqualEqual | NotEqual) equalityExpression )?;
+	relationalExpression (equalityOperator relationalExpression)*;
 
-andExpression: equalityExpression (And andExpression)?;
+equalityOperator: EqualEqual | NotEqual;
 
-xorExpression: andExpression (Caret xorExpression)?;
+andExpression: equalityExpression (And equalityExpression)*;
 
-orExpression: xorExpression (Or orExpression)?;
+xorExpression: andExpression (Caret andExpression)*;
 
-logicalAndExpression: orExpression (AndAnd logicalAndExpression)?;
+orExpression: xorExpression (Or xorExpression)*;
 
-logicalOrExpression: logicalAndExpression (OrOr logicalOrExpression)?;
+logicalAndExpression: orExpression (AndAnd orExpression)*;
+
+logicalOrExpression: logicalAndExpression (OrOr logicalAndExpression)*;
 
 assignmentExpression: logicalOrExpression (Assign logicalOrExpression)?;
 

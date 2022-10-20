@@ -68,16 +68,6 @@ public interface MxListener extends ParseTreeListener {
 	 */
 	void exitFuncallParameter(MxParser.FuncallParameterContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MxParser#arrayExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterArrayExpression(MxParser.ArrayExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MxParser#arrayExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitArrayExpression(MxParser.ArrayExpressionContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link MxParser#newExpression}.
 	 * @param ctx the parse tree
 	 */
@@ -97,6 +87,16 @@ public interface MxListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitLambdaExpression(MxParser.LambdaExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MxParser#arrayExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterArrayExpression(MxParser.ArrayExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MxParser#arrayExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitArrayExpression(MxParser.ArrayExpressionContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MxParser#memberExpression}.
 	 * @param ctx the parse tree
@@ -138,6 +138,16 @@ public interface MxListener extends ParseTreeListener {
 	 */
 	void exitMultiplicativeExpression(MxParser.MultiplicativeExpressionContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link MxParser#multiplicativeOperator}.
+	 * @param ctx the parse tree
+	 */
+	void enterMultiplicativeOperator(MxParser.MultiplicativeOperatorContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MxParser#multiplicativeOperator}.
+	 * @param ctx the parse tree
+	 */
+	void exitMultiplicativeOperator(MxParser.MultiplicativeOperatorContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link MxParser#additiveExpression}.
 	 * @param ctx the parse tree
 	 */
@@ -147,6 +157,16 @@ public interface MxListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitAdditiveExpression(MxParser.AdditiveExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MxParser#additiveOperator}.
+	 * @param ctx the parse tree
+	 */
+	void enterAdditiveOperator(MxParser.AdditiveOperatorContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MxParser#additiveOperator}.
+	 * @param ctx the parse tree
+	 */
+	void exitAdditiveOperator(MxParser.AdditiveOperatorContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MxParser#shiftExpression}.
 	 * @param ctx the parse tree
@@ -158,6 +178,16 @@ public interface MxListener extends ParseTreeListener {
 	 */
 	void exitShiftExpression(MxParser.ShiftExpressionContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link MxParser#shiftOperator}.
+	 * @param ctx the parse tree
+	 */
+	void enterShiftOperator(MxParser.ShiftOperatorContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MxParser#shiftOperator}.
+	 * @param ctx the parse tree
+	 */
+	void exitShiftOperator(MxParser.ShiftOperatorContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link MxParser#relationalExpression}.
 	 * @param ctx the parse tree
 	 */
@@ -168,6 +198,16 @@ public interface MxListener extends ParseTreeListener {
 	 */
 	void exitRelationalExpression(MxParser.RelationalExpressionContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link MxParser#relationalOperator}.
+	 * @param ctx the parse tree
+	 */
+	void enterRelationalOperator(MxParser.RelationalOperatorContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MxParser#relationalOperator}.
+	 * @param ctx the parse tree
+	 */
+	void exitRelationalOperator(MxParser.RelationalOperatorContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link MxParser#equalityExpression}.
 	 * @param ctx the parse tree
 	 */
@@ -177,6 +217,16 @@ public interface MxListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitEqualityExpression(MxParser.EqualityExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MxParser#equalityOperator}.
+	 * @param ctx the parse tree
+	 */
+	void enterEqualityOperator(MxParser.EqualityOperatorContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MxParser#equalityOperator}.
+	 * @param ctx the parse tree
+	 */
+	void exitEqualityOperator(MxParser.EqualityOperatorContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MxParser#andExpression}.
 	 * @param ctx the parse tree

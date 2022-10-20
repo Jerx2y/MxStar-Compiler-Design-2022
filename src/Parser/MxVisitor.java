@@ -47,12 +47,6 @@ public interface MxVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFuncallParameter(MxParser.FuncallParameterContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link MxParser#arrayExpression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitArrayExpression(MxParser.ArrayExpressionContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link MxParser#newExpression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -64,6 +58,12 @@ public interface MxVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitLambdaExpression(MxParser.LambdaExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MxParser#arrayExpression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArrayExpression(MxParser.ArrayExpressionContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MxParser#memberExpression}.
 	 * @param ctx the parse tree
@@ -89,11 +89,23 @@ public interface MxVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitMultiplicativeExpression(MxParser.MultiplicativeExpressionContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MxParser#multiplicativeOperator}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMultiplicativeOperator(MxParser.MultiplicativeOperatorContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MxParser#additiveExpression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitAdditiveExpression(MxParser.AdditiveExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MxParser#additiveOperator}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAdditiveOperator(MxParser.AdditiveOperatorContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MxParser#shiftExpression}.
 	 * @param ctx the parse tree
@@ -101,17 +113,35 @@ public interface MxVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitShiftExpression(MxParser.ShiftExpressionContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MxParser#shiftOperator}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitShiftOperator(MxParser.ShiftOperatorContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MxParser#relationalExpression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitRelationalExpression(MxParser.RelationalExpressionContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MxParser#relationalOperator}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRelationalOperator(MxParser.RelationalOperatorContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MxParser#equalityExpression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitEqualityExpression(MxParser.EqualityExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MxParser#equalityOperator}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEqualityOperator(MxParser.EqualityOperatorContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MxParser#andExpression}.
 	 * @param ctx the parse tree

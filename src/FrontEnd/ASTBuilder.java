@@ -140,77 +140,89 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
     }
 
     @Override public ASTNode visitLogicalOrExpression(MxParser.LogicalOrExpressionContext ctx) {
-        if (ctx.OrOr() == null)
-            return visit(ctx.logicalAndExpression());
-        return new binaryExprNode((ExprNode) visit(ctx.logicalAndExpression()), (ExprNode) visit(ctx.logicalOrExpression()), binaryExprNode.binaryOpType.DOUBLE_OR, new position(ctx));
+        ExprNode node = (ExprNode) visit(ctx.logicalAndExpression(0));
+        for (int i = 1, sz = ctx.logicalAndExpression().size(); i < sz; ++i)
+            node = new binaryExprNode(node, (ExprNode) visit(ctx.logicalAndExpression(i)), binaryExprNode.binaryOpType.DOUBLE_OR, new position(ctx));
+        return node;
     }
 
     @Override public ASTNode visitLogicalAndExpression(MxParser.LogicalAndExpressionContext ctx) {
-        if (ctx.AndAnd() == null)
-            return visit(ctx.orExpression());
-        return new binaryExprNode((ExprNode) visit(ctx.orExpression()), (ExprNode) visit(ctx.logicalAndExpression()), binaryExprNode.binaryOpType.DOUBLE_AND, new position(ctx));
+        ExprNode node = (ExprNode) visit(ctx.orExpression(0));
+        for (int i = 1, sz = ctx.orExpression().size(); i < sz; ++i)
+            node = new binaryExprNode(node, (ExprNode) visit(ctx.orExpression(i)), binaryExprNode.binaryOpType.DOUBLE_AND, new position(ctx));
+        return node;
     }
 
     @Override public ASTNode visitOrExpression(MxParser.OrExpressionContext ctx) {
-        if (ctx.Or() == null)
-            return visit(ctx.xorExpression());
-        return new binaryExprNode((ExprNode) visit(ctx.xorExpression()), (ExprNode) visit(ctx.orExpression()), binaryExprNode.binaryOpType.OR, new position(ctx));
+        ExprNode node = (ExprNode) visit(ctx.xorExpression(0));
+        for (int i = 1, sz = ctx.xorExpression().size(); i < sz; ++i)
+            node = new binaryExprNode(node, (ExprNode) visit(ctx.xorExpression(i)), binaryExprNode.binaryOpType.OR, new position(ctx));
+        return node;
     }
 
     @Override public ASTNode visitXorExpression(MxParser.XorExpressionContext ctx) {
-        if (ctx.Caret() == null)
-            return visit(ctx.andExpression());
-        return new binaryExprNode((ExprNode) visit(ctx.andExpression()), (ExprNode) visit(ctx.xorExpression()), binaryExprNode.binaryOpType.XOR, new position(ctx));
+        ExprNode node = (ExprNode) visit(ctx.andExpression(0));
+        for (int i = 1, sz = ctx.andExpression().size(); i < sz; ++i)
+            node = new binaryExprNode(node, (ExprNode) visit(ctx.andExpression(i)), binaryExprNode.binaryOpType.XOR, new position(ctx));
+        return node;
     }
 
     @Override public ASTNode visitAndExpression(MxParser.AndExpressionContext ctx) {
-        if (ctx.And() == null)
-            return visit(ctx.equalityExpression());
-        return new binaryExprNode((ExprNode) visit(ctx.equalityExpression()), (ExprNode) visit(ctx.andExpression()), binaryExprNode.binaryOpType.AND, new position(ctx));
+        ExprNode node = (ExprNode) visit(ctx.equalityExpression(0));
+        for (int i = 1, sz = ctx.equalityExpression().size(); i < sz; ++i)
+            node = new binaryExprNode(node, (ExprNode) visit(ctx.equalityExpression(i)), binaryExprNode.binaryOpType.AND, new position(ctx));
+        return node;
     }
 
     @Override public ASTNode visitEqualityExpression(MxParser.EqualityExpressionContext ctx) {
-        if (ctx.EqualEqual() == null && ctx.NotEqual() == null)
-            return visit(ctx.relationalExpression());
-        return new eqExprNode((ExprNode) visit(ctx.relationalExpression()), (ExprNode) visit(ctx.equalityExpression()), ctx.EqualEqual() != null, new position(ctx));
+        ExprNode node = (ExprNode) visit(ctx.relationalExpression(0));
+        for (int i = 1, sz = ctx.relationalExpression().size(); i < sz; ++i)
+            node = new eqExprNode(node, (ExprNode) visit(ctx.relationalExpression(i)), ctx.equalityOperator(i - 1).EqualEqual() != null, new position(ctx));
+        return node;
     }
 
     @Override public ASTNode visitRelationalExpression(MxParser.RelationalExpressionContext ctx) {
-        if (ctx.Less() != null)
-            return new cmpExprNode((ExprNode) visit(ctx.shiftExpression()), (ExprNode) visit(ctx.relationalExpression()), cmpExprNode.cmpOpType.LE, new position(ctx));
-        else if (ctx.LessEqual() != null)
-            return new cmpExprNode((ExprNode) visit(ctx.shiftExpression()), (ExprNode) visit(ctx.relationalExpression()), cmpExprNode.cmpOpType.LEQ, new position(ctx));
-        else if (ctx.Greater() != null)
-            return new cmpExprNode((ExprNode) visit(ctx.shiftExpression()), (ExprNode) visit(ctx.relationalExpression()), cmpExprNode.cmpOpType.GR, new position(ctx));
-        else if (ctx.GreaterEqual() != null)
-            return new cmpExprNode((ExprNode) visit(ctx.shiftExpression()), (ExprNode) visit(ctx.relationalExpression()), cmpExprNode.cmpOpType.GEQ, new position(ctx));
-        else return visit(ctx.shiftExpression());
+        ExprNode node = (ExprNode) visit(ctx.shiftExpression(0));
+        for (int i = 1, sz = ctx.shiftExpression().size(); i < sz; ++i) {
+            cmpExprNode.cmpOpType optype;
+            if (ctx.relationalOperator(i - 1).Less() != null)
+                optype = cmpExprNode.cmpOpType.LE;
+            else if (ctx.relationalOperator(i - 1).LessEqual() != null)
+                optype = cmpExprNode.cmpOpType.LEQ;
+            else if (ctx.relationalOperator(i - 1).Greater() != null)
+                optype = cmpExprNode.cmpOpType.GR;
+            else optype = cmpExprNode.cmpOpType.GEQ;
+            node = new cmpExprNode(node, (ExprNode) visit(ctx.shiftExpression(i)), optype, new position(ctx));
+        }
+        return node;
     }
 
     @Override public ASTNode visitShiftExpression(MxParser.ShiftExpressionContext ctx) {
-        if (ctx.LShift() != null)
-            return new binaryExprNode((ExprNode) visit(ctx.additiveExpression()), (ExprNode) visit(ctx.shiftExpression()), binaryExprNode.binaryOpType.DOUBLE_L, new position(ctx));
-        else if (ctx.Rshift() != null)
-            return new binaryExprNode((ExprNode) visit(ctx.additiveExpression()), (ExprNode) visit(ctx.shiftExpression()), binaryExprNode.binaryOpType.DOUBLE_R, new position(ctx));
-        else return visit(ctx.additiveExpression());
+        ExprNode node = (ExprNode) visit(ctx.additiveExpression(0));
+        for (int i = 1, sz = ctx.additiveExpression().size(); i < sz; ++i)
+            node = new binaryExprNode(node, (ExprNode) visit(ctx.additiveExpression(i)), ctx.shiftOperator(i - 1).LShift() != null ? binaryExprNode.binaryOpType.DOUBLE_L : binaryExprNode.binaryOpType.DOUBLE_R, new position(ctx));
+        return node;
     }
 
     @Override public ASTNode visitAdditiveExpression(MxParser.AdditiveExpressionContext ctx) {
-        if (ctx.Add() != null)
-            return new binaryExprNode((ExprNode) visit(ctx.multiplicativeExpression()), (ExprNode) visit(ctx.additiveExpression()), binaryExprNode.binaryOpType.ADD, new position(ctx));
-        else if (ctx.Sub() != null)
-            return new binaryExprNode((ExprNode) visit(ctx.multiplicativeExpression()), (ExprNode) visit(ctx.additiveExpression()), binaryExprNode.binaryOpType.SUB, new position(ctx));
-        else return visit(ctx.multiplicativeExpression());
+        ExprNode node = (ExprNode) visit(ctx.multiplicativeExpression(0));
+        for (int i = 1, sz = ctx.multiplicativeExpression().size(); i < sz; ++i)
+            node = new binaryExprNode(node, (ExprNode) visit(ctx.multiplicativeExpression(i)), ctx.additiveOperator(i - 1).Add() != null ? binaryExprNode.binaryOpType.ADD : binaryExprNode.binaryOpType.SUB, new position(ctx));
+        return node;
     }
 
     @Override public ASTNode visitMultiplicativeExpression(MxParser.MultiplicativeExpressionContext ctx) {
-        if (ctx.Mul() != null)
-            return new binaryExprNode((ExprNode) visit(ctx.unaryExpression()), (ExprNode) visit(ctx.multiplicativeExpression()), binaryExprNode.binaryOpType.MUL, new position(ctx));
-        else if (ctx.Div() != null)
-            return new binaryExprNode((ExprNode) visit(ctx.unaryExpression()), (ExprNode) visit(ctx.multiplicativeExpression()), binaryExprNode.binaryOpType.DIV, new position(ctx));
-        else if (ctx.Mod() != null)
-            return new binaryExprNode((ExprNode) visit(ctx.unaryExpression()), (ExprNode) visit(ctx.multiplicativeExpression()), binaryExprNode.binaryOpType.MOD, new position(ctx));
-        else return visit(ctx.multiplicativeExpression());
+        ExprNode node = (ExprNode) visit(ctx.unaryExpression(0));
+        for (int i = 1, sz = ctx.unaryExpression().size(); i < sz; ++i) {
+            binaryExprNode.binaryOpType type;
+            if (ctx.multiplicativeOperator(i - 1).Mul() != null)
+                type = binaryExprNode.binaryOpType.MUL;
+            else if (ctx.multiplicativeOperator(i - 1).Div() != null)
+                type = binaryExprNode.binaryOpType.DIV;
+            else type = binaryExprNode.binaryOpType.MOD;
+            node = new binaryExprNode(node, (ExprNode) visit(ctx.unaryExpression(i)), type, new position(ctx));
+        }
+        return node;
     }
 
     @Override public ASTNode visitUnaryExpression(MxParser.UnaryExpressionContext ctx) {
@@ -238,13 +250,10 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
     }
 
     @Override public ASTNode visitMemberExpression(MxParser.MemberExpressionContext ctx) {
-        if (ctx.Identifier() != null)
-            return new memberExprNode((ExprNode) visit(ctx.primaryExpression()), new varExprNode(ctx.Identifier().getText(), new position(ctx.Identifier())), new position(ctx));
-        else if (ctx.funcExpression() != null)
-            return new memberExprNode((ExprNode) visit(ctx.primaryExpression()), (ExprNode) visit(ctx.funcExpression()), new position(ctx));
-        else if (ctx.arrayExpression() != null)
-            return new memberExprNode((ExprNode) visit(ctx.primaryExpression()), (ExprNode) visit(ctx.arrayExpression()), new position(ctx));
-        else return visit(ctx.primaryExpression());
+        ExprNode node = (ExprNode) visit(ctx.arrayExpression(0));
+        for (int i = 1, sz = ctx.arrayExpression().size(); i < sz; ++i)
+            node = new memberExprNode(node, (ExprNode) visit(ctx.arrayExpression(i)), new position(ctx));
+        return node;
     }
 
     @Override public ASTNode visitLambdaExpression(MxParser.LambdaExpressionContext ctx) {
@@ -260,12 +269,8 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
     }
 
     @Override public ASTNode visitArrayExpression(MxParser.ArrayExpressionContext ctx) {
-        ExprNode caller;
-        if (ctx.newExpression() != null)
-            caller = (ExprNode) visit(ctx.newExpression());
-        else caller = new varExprNode(ctx.Identifier().getText(), new position(ctx.Identifier()));
-        arrayExprNode node = new arrayExprNode(caller, (ExprNode) visit(ctx.expression(0)), new position(ctx.expression(0)));
-        for (int i = 1, sz = ctx.expression().size(); i < sz; ++i)
+        ExprNode node = (ExprNode) visit(ctx.primaryExpression());
+        for (int i = 0, sz = ctx.expression().size(); i < sz; ++i)
             node = new arrayExprNode(node, (ExprNode) visit(ctx.expression(i)), new position(ctx.expression(i)));
         return node;
     }
@@ -291,8 +296,6 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
             return visit(ctx.expression());
         else if (ctx.funcExpression() != null)
             return visit(ctx.funcExpression());
-        else if (ctx.arrayExpression() != null)
-            return visit(ctx.arrayExpression());
         else if (ctx.lambdaExpression() != null)
             return visit(ctx.lambdaExpression());
         else if (ctx.newExpression() != null)

@@ -5,10 +5,24 @@ import Parser.MxParser;
 import java.util.HashMap;
 
 public class Type {
-    public enum BuiltinType{INT, BOOL, STRING, CLASS, VOID};
+    public enum BuiltinType{INT, BOOL, STRING, CLASS, VOID, NULL};
     public BuiltinType basicType;
     public String className = null;
     int dimension = 0;
+
+    public boolean isVar(BuiltinType basicType) {
+        return basicType == this.basicType && dimension == 0;
+    }
+
+    public boolean isArray() {
+        return dimension > 0;
+    }
+
+    public Type(Type that) {
+        this.basicType = that.basicType;
+        this.className = that.className;
+        this.dimension = that.dimension;
+    }
 
     public Type(BuiltinType type) {
         this.basicType = type;
@@ -44,4 +58,9 @@ public class Type {
         this.className = classname;
         this.dimension = ctx.LBrack().size();
     }
+
+    public boolean equals(Type that) {
+        return this.basicType == that.basicType && this.className.equals(that.className) && this.dimension == that.dimension;
+    }
+
 }
