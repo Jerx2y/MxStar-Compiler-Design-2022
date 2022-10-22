@@ -11,35 +11,36 @@ primaryExpression:
 	| This
 	| Identifier
 	| LParen expression RParen
-	| newExpression
-	| funcExpression
 	| lambdaExpression;
 
 literal: IntLiteral | StringLiteral | False | True | Null;
 
-funcExpression: Identifier funcallParameter;
-
-funcallParameter: LParen ( expression (Comma expression)* )? RParen;
-
-newExpression: New typename (LParen RParen)?;
-
 lambdaExpression:
 	LBrack And? RBrack funcParameter? Arrow compoundStatement funcallParameter;
 
-arrayExpression:
-    primaryExpression (LBrack expression RBrack)*;
-
 memberExpression:
-    arrayExpression (Dot arrayExpression)*;
+    primaryExpression (Dot Identifier)*;
+
+arrayExpression:
+    memberExpression (LBrack expression RBrack)*;
+
+funcExpression:
+    arrayExpression funcallParameter?;
+
+funcallParameter:
+    LParen ( expression (Comma expression)* )? RParen;
 
 selfExpression:
-    memberExpression (AddAdd | SubSub)?;
+    funcExpression (AddAdd | SubSub)?;
 
 unaryExpression:
 	selfExpression | ( (AddAdd | SubSub | Not | Tilde | Sub | Add) unaryExpression );
 
+newExpression:
+    unaryExpression | ( New typename (LParen RParen)? );
+
 multiplicativeExpression:
-	unaryExpression (multiplicativeOperator unaryExpression)*;
+	newExpression (multiplicativeOperator newExpression)*;
 
 multiplicativeOperator: Mul | Div | Mod;
 
@@ -119,7 +120,9 @@ classDefinition : Class Identifier LBrace (varDeclaration | classConstruction | 
 
 classConstruction: Identifier LParen RParen compoundStatement;
 
-typename: (Int | Bool | String | Identifier) (LBrack expression? RBrack)*;
+typename: (Int | Bool | String | Identifier) bracket*;
+
+bracket: LBrack expression? RBrack;
 
 // Lexer
 
@@ -197,6 +200,6 @@ BlockComment : '/*' .*? '*/' -> skip;
 Identifier : [a-zA-Z] [a-zA-Z_0-9]*;
 
 // Constant
-IntLiteral : [1-9] [0-9]* | '0' ;                             // TODO: Range
-StringLiteral : '"' (ESC|.)*? '"';                            // TODO: Range
+IntLiteral : [1-9] [0-9]* | '0' ;
+StringLiteral : '"' (ESC|.)*? '"';
 fragment ESC : '\\"' | '\\\\' | '\\n';

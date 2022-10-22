@@ -2,24 +2,24 @@ package AST.Def;
 
 import AST.ASTVisitor;
 import AST.Expr.ExprNode;
-import Util.Type;
+import Util.Type.varType;
 import Util.position;
 
 public class singleVarDefNode extends DefNode {
-    public Type type;
+    public varType varType;
     public String identifier;
     public ExprNode initExpr;
 
-    public singleVarDefNode(Type type, String identifier, ExprNode initExpr, position pos) {
+    public singleVarDefNode(varType varType, String identifier, ExprNode initExpr, position pos) {
         super(pos);
-        this.type = type;
+        this.varType = varType;
         this.identifier = identifier;
         this.initExpr = initExpr;
     }
 
-    public singleVarDefNode(Type type, String identifier, position pos) {
+    public singleVarDefNode(varType varType, String identifier, position pos) {
         super(pos);
-        this.type = type;
+        this.varType = varType;
         this.identifier = identifier;
         this.initExpr = null;
     }

@@ -6,10 +6,10 @@ import Util.position;
 import java.util.ArrayList;
 
 public class funcExprNode extends ExprNode {
-    public String caller;
+    public ExprNode caller;
     public ArrayList<ExprNode> exprs;
 
-    public funcExprNode(String caller, position pos) {
+    public funcExprNode(ExprNode caller, position pos) {
         super(pos);
         this.caller = caller;
         exprs = new ArrayList<>();

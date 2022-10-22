@@ -4,9 +4,10 @@ import AST.ASTVisitor;
 import Util.position;
 
 public class memberExprNode extends ExprNode {
-    public ExprNode caller, member;
+    public ExprNode caller;
+    public String member;
 
-    public memberExprNode(ExprNode caller, ExprNode member, position pos) {
+    public memberExprNode(ExprNode caller, String member, position pos) {
         super(pos);
         this.caller = caller;
         this.member = member;

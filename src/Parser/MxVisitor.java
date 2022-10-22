@@ -35,6 +35,24 @@ public interface MxVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitLiteral(MxParser.LiteralContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link MxParser#lambdaExpression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLambdaExpression(MxParser.LambdaExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MxParser#memberExpression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMemberExpression(MxParser.MemberExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MxParser#arrayExpression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArrayExpression(MxParser.ArrayExpressionContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MxParser#funcExpression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -47,30 +65,6 @@ public interface MxVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFuncallParameter(MxParser.FuncallParameterContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link MxParser#newExpression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitNewExpression(MxParser.NewExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link MxParser#lambdaExpression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLambdaExpression(MxParser.LambdaExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link MxParser#arrayExpression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitArrayExpression(MxParser.ArrayExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link MxParser#memberExpression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitMemberExpression(MxParser.MemberExpressionContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link MxParser#selfExpression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -82,6 +76,12 @@ public interface MxVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitUnaryExpression(MxParser.UnaryExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MxParser#newExpression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNewExpression(MxParser.NewExpressionContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MxParser#multiplicativeExpression}.
 	 * @param ctx the parse tree
@@ -280,4 +280,10 @@ public interface MxVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitTypename(MxParser.TypenameContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MxParser#bracket}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBracket(MxParser.BracketContext ctx);
 }

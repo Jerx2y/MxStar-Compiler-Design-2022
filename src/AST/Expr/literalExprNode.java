@@ -2,7 +2,7 @@ package AST.Expr;
 
 import AST.ASTVisitor;
 import Parser.MxParser;
-import Util.Type;
+import Util.Type.varType;
 import Util.position;
 
 public class literalExprNode extends ExprNode {
@@ -15,30 +15,30 @@ public class literalExprNode extends ExprNode {
     public literalExprNode(boolean boolval, position pos) {
         super(pos);
         this.boolVal = boolval;
-        this.type = new Type(Type.BuiltinType.BOOL);
+        this.type = new varType(varType.BuiltinType.BOOL);
     }
 
     public literalExprNode(MxParser.LiteralContext ctx) {
         super(new position(ctx));
         if (ctx.IntLiteral() != null) {
-            type = new Type(Type.BuiltinType.INT);
+            type = new varType(varType.BuiltinType.INT);
             intVal = Integer.parseInt(ctx.IntLiteral().toString());
         }
         if (ctx.StringLiteral() != null) {
-            type = new Type(Type.BuiltinType.STRING);
+            type = new varType(varType.BuiltinType.STRING);
             String str = ctx.StringLiteral().toString();
             stringVal = str.substring(1, str.length() - 1);
         }
         if (ctx.True() != null) {
-            type = new Type(Type.BuiltinType.BOOL);
+            type = new varType(varType.BuiltinType.BOOL);
             boolVal = true;
         }
         if (ctx.False() != null) {
-            type = new Type(Type.BuiltinType.BOOL);
+            type = new varType(varType.BuiltinType.BOOL);
             boolVal = false;
         }
         if (ctx.Null() != null) {
-            type = new Type(Type.BuiltinType.NULL);
+            type = new varType(varType.BuiltinType.NULL);
             isNull = true;
         }
     }

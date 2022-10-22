@@ -5,8 +5,9 @@ import AST.Expr.*;
 import AST.Def.*;
 import AST.ASTVisitor;
 import AST.RootNode;
-import Util.Info.*;
 import Util.Scope.globalScope;
+import Util.Type.classType;
+import Util.Type.funcType;
 
 public class SymbolCollector implements ASTVisitor {
     private globalScope gScope;
@@ -23,20 +24,20 @@ public class SymbolCollector implements ASTVisitor {
 
     public void visit(DefNode it) {}
     public void visit(classDefNode it) {
-        classInfo ci = new classInfo();
-        it.varDecs.forEach(vd -> vd.singleVarDefs.forEach(svd -> ci.addVar(svd.identifier, svd.type, svd.pos)));
+        classType ci = new classType();
+        it.varDecs.forEach(vd -> vd.singleVarDefs.forEach(svd -> ci.addVar(svd.identifier, svd.varType, svd.pos)));
         for (funcDefNode fd : it.funcDefs) {
-            funcInfo fi = new funcInfo();
-            fi.ret = fd.type;
-            fd.parameter.singleVarDefs.forEach(svd -> fi.para.add(svd.type));
+            funcType fi = new funcType();
+            fi.ret = fd.varType;
+            fd.parameter.singleVarDefs.forEach(svd -> fi.para.add(svd.varType));
             ci.addFunc(fd.identifier, fi, fd.pos);
         }
         gScope.addClass(it.identifier, ci, it.pos);
     }
     public void visit(funcDefNode it) {
-        funcInfo fi = new funcInfo();
-        fi.ret = it.type;
-        it.parameter.singleVarDefs.forEach(svd -> fi.para.add(svd.type));
+        funcType fi = new funcType();
+        fi.ret = it.varType;
+        it.parameter.singleVarDefs.forEach(svd -> fi.para.add(svd.varType));
         gScope.addFunc(it.identifier, fi, it.pos);
     }
     public void visit(singleVarDefNode it) {}

@@ -9,7 +9,6 @@ public class varExprNode extends ExprNode {
     public varExprNode(String identifier, position pos) {
         super(pos);
         this.identifier = identifier;
-        type = null; // TODO
     }
 
     @Override
