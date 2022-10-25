@@ -11,27 +11,21 @@ primaryExpression:
 	| This
 	| Identifier
 	| LParen expression RParen
+	| primaryExpression Dot Identifier
+    | primaryExpression LBrack expression RBrack
+    | primaryExpression funcallParameter
 	| lambdaExpression;
 
 literal: IntLiteral | StringLiteral | False | True | Null;
 
-lambdaExpression:
-	LBrack And? RBrack funcParameter? Arrow compoundStatement funcallParameter;
-
-memberExpression:
-    primaryExpression (Dot Identifier)*;
-
-arrayExpression:
-    memberExpression (LBrack expression RBrack)*;
-
-funcExpression:
-    arrayExpression funcallParameter?;
-
 funcallParameter:
     LParen ( expression (Comma expression)* )? RParen;
 
+lambdaExpression:
+	LBrack And? RBrack funcParameter? Arrow compoundStatement funcallParameter;
+
 selfExpression:
-    funcExpression (AddAdd | SubSub)?;
+    primaryExpression (AddAdd | SubSub)?;
 
 unaryExpression:
 	selfExpression | ( (AddAdd | SubSub | Not | Tilde | Sub | Add) unaryExpression );
