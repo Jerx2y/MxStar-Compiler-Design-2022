@@ -6,11 +6,13 @@ import Util.position;
 import java.util.HashMap;
 
 public class classType {
+    public String classname;
     private final HashMap<String, varType> vars;
     private final HashMap<String, funcType> func;
-    public classType() {
+    public classType(String name) {
         vars = new HashMap<>();
         func = new HashMap<>();
+        classname = name;
     }
     public void addVar(String name, varType varType, position pos) {
         if (vars.containsKey(name))
@@ -27,5 +29,13 @@ public class classType {
     }
     public HashMap<String, funcType> getFuncList() {
         return func;
+    }
+
+    public varType getVar(String name) {
+        return vars.get(name);
+    }
+
+    public funcType getFunc(String name) {
+        return func.get(name);
     }
 }

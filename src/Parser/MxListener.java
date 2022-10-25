@@ -48,46 +48,6 @@ public interface MxListener extends ParseTreeListener {
 	 */
 	void exitLiteral(MxParser.LiteralContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MxParser#lambdaExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterLambdaExpression(MxParser.LambdaExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MxParser#lambdaExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitLambdaExpression(MxParser.LambdaExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MxParser#memberExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterMemberExpression(MxParser.MemberExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MxParser#memberExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitMemberExpression(MxParser.MemberExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MxParser#arrayExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterArrayExpression(MxParser.ArrayExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MxParser#arrayExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitArrayExpression(MxParser.ArrayExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MxParser#funcExpression}.
-	 * @param ctx the parse tree
-	 */
-	void enterFuncExpression(MxParser.FuncExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MxParser#funcExpression}.
-	 * @param ctx the parse tree
-	 */
-	void exitFuncExpression(MxParser.FuncExpressionContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link MxParser#funcallParameter}.
 	 * @param ctx the parse tree
 	 */
@@ -97,6 +57,16 @@ public interface MxListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitFuncallParameter(MxParser.FuncallParameterContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MxParser#lambdaExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterLambdaExpression(MxParser.LambdaExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MxParser#lambdaExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitLambdaExpression(MxParser.LambdaExpressionContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MxParser#selfExpression}.
 	 * @param ctx the parse tree

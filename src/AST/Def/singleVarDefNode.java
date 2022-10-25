@@ -2,24 +2,25 @@ package AST.Def;
 
 import AST.ASTVisitor;
 import AST.Expr.ExprNode;
+import Parser.MxParser;
 import Util.Type.varType;
 import Util.position;
 
 public class singleVarDefNode extends DefNode {
-    public varType varType;
+    public MxParser.TypenameContext typename;
     public String identifier;
     public ExprNode initExpr;
 
-    public singleVarDefNode(varType varType, String identifier, ExprNode initExpr, position pos) {
+    public singleVarDefNode(MxParser.TypenameContext ctx, String identifier, ExprNode initExpr, position pos) {
         super(pos);
-        this.varType = varType;
+        this.typename = ctx;
         this.identifier = identifier;
         this.initExpr = initExpr;
     }
 
-    public singleVarDefNode(varType varType, String identifier, position pos) {
+    public singleVarDefNode(MxParser.TypenameContext ctx, String identifier, position pos) {
         super(pos);
-        this.varType = varType;
+        this.typename = ctx;
         this.identifier = identifier;
         this.initExpr = null;
     }

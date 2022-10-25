@@ -8,6 +8,7 @@ import AST.RootNode;
 import Util.Scope.globalScope;
 import Util.Type.classType;
 import Util.Type.funcType;
+import Util.Type.varType;
 
 public class SymbolCollector implements ASTVisitor {
     private globalScope gScope;
@@ -17,27 +18,40 @@ public class SymbolCollector implements ASTVisitor {
     @Override
     public void visit(RootNode it) {
         for (DefNode def : it.defs) {
-            if (def instanceof classDefNode || def instanceof funcDefNode)
-                def.accept(this);
+            if (def instanceof  classDefNode) {
+                classType ci = new classType(((classDefNode) def).identifier);
+                gScope.addClass(((classDefNode) def).identifier, ci, def.pos);
+            }
         }
+        for (DefNode def : it.defs)
+            if (def instanceof classDefNode)
+                def.accept(this);
+        for (DefNode def : it.defs)
+            if (def instanceof funcDefNode)
+                def.accept(this);
     }
 
     public void visit(DefNode it) {}
     public void visit(classDefNode it) {
-        classType ci = new classType();
-        it.varDecs.forEach(vd -> vd.singleVarDefs.forEach(svd -> ci.addVar(svd.identifier, svd.varType, svd.pos)));
+        classType ci = gScope.getClassType(it.identifier);
+        for (varDefNode vd : it.varDecs) {
+            for (singleVarDefNode svd : vd.singleVarDefs) {
+                varType vtype = new varType(svd.typename, gScope);
+                ci.addVar(svd.identifier, vtype, svd.pos);
+            }
+        }
         for (funcDefNode fd : it.funcDefs) {
             funcType fi = new funcType();
-            fi.ret = fd.varType;
-            fd.parameter.singleVarDefs.forEach(svd -> fi.para.add(svd.varType));
+            fi.ret = new varType(fd.retype, gScope);
+            fd.parameter.singleVarDefs.forEach(svd -> fi.para.add(new varType(svd.typename, gScope)));
             ci.addFunc(fd.identifier, fi, fd.pos);
         }
         gScope.addClass(it.identifier, ci, it.pos);
     }
     public void visit(funcDefNode it) {
         funcType fi = new funcType();
-        fi.ret = it.varType;
-        it.parameter.singleVarDefs.forEach(svd -> fi.para.add(svd.varType));
+        fi.ret = new varType(it.retype, gScope);
+        it.parameter.singleVarDefs.forEach(svd -> fi.para.add(new varType(svd.typename, gScope)));
         gScope.addFunc(it.identifier, fi, it.pos);
     }
     public void visit(singleVarDefNode it) {}

@@ -1,11 +1,16 @@
 package Util.Type;
 
 import Parser.MxParser;
+import Util.Scope.Scope;
+import Util.Scope.globalScope;
+import Util.error.semanticError;
+import Util.position;
 
 public class varType {
-    public enum BuiltinType{INT, BOOL, STRING, CLASS, VOID, NULL, FUNC, THIS};
+    public enum BuiltinType{INT, BOOL, STRING, VOID, NULL, THIS, CLASS, FUNC};
     public BuiltinType basicType;
-    public String name = null;
+    public classType ctype = null;
+    public funcType ftype = null;
     public int dimension = 0;
 
     public boolean isVar(BuiltinType basicType) {
@@ -18,7 +23,8 @@ public class varType {
 
     public varType(varType that) {
         this.basicType = that.basicType;
-        this.name = that.name;
+        this.ctype = that.ctype;
+        this.ftype = that.ftype;
         this.dimension = that.dimension;
     }
 
@@ -26,9 +32,9 @@ public class varType {
         this.basicType = type;
     }
 
-    public varType(String classname) {
+    public varType(classType ctype) {
         this.basicType = BuiltinType.CLASS;
-        this.name = classname;
+        this.ctype = ctype;
     }
 
     public varType(BuiltinType type, int dim) {
@@ -36,34 +42,38 @@ public class varType {
         this.dimension = dim;
     }
 
-    public varType(String classname, int dim) {
+    public varType(classType ctype, int dim) {
         this.basicType = BuiltinType.CLASS;
-        this.name = classname;
+        this.ctype = ctype;
         this.dimension = dim;
     }
 
-    public varType(MxParser.TypenameContext ctx) {
+    public varType(funcType ftype) {
+        this.basicType = BuiltinType.FUNC;
+        this.ftype = ftype;
+    }
+
+    public varType(MxParser.TypenameContext ctx, globalScope gScope) {
         BuiltinType basetype;
-        String classname = null;
+        classType ctype = null;
         if (ctx.Int() != null) basetype = BuiltinType.INT;
         else if (ctx.Bool() != null) basetype = BuiltinType.BOOL;
         else if (ctx.String() != null) basetype = BuiltinType.STRING;
         else {
             basetype = BuiltinType.CLASS;
-            classname = ctx.Identifier().getText();
+            ctype = gScope.getClassTypeFromName(ctx.Identifier().getText(), new position(ctx));
         }
         this.basicType = basetype;
-        this.name = classname;
+        this.ctype = ctype;
         this.dimension = ctx.bracket().size();
     }
 
-    public varType(String name, boolean isFunction) {
-        this.name = name;
-        this.basicType = BuiltinType.FUNC;
-    }
-
     public boolean equal(varType that) {
-        return this.basicType != that.basicType || !this.name.equals(that.name) || this.dimension != that.dimension;
+        if (this.basicType != that.basicType || this.dimension != that.dimension)
+            return false;
+        if (ctype != null)
+            return ctype.classname.equals(that.ctype.classname);
+        throw new semanticError("[varType equal] type invalid", null);
     }
 
 }

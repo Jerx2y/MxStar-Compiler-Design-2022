@@ -10,8 +10,6 @@ import Util.Scope.*;
 import Util.Type.varType;
 import Util.error.semanticError;
 
-import java.lang.reflect.Type;
-
 public class SemanticChecker implements ASTVisitor {
     private Scope currentScope;
     private final globalScope gScope;
@@ -40,7 +38,7 @@ public class SemanticChecker implements ASTVisitor {
         currentScope = currentScope.parentScope();
     }
     public void visit(singleVarDefNode it) {
-        currentScope.defineVariable(it.identifier, it.varType, it.pos);
+        currentScope.defineVariable(it.identifier, new varType(it.typename, gScope), it.pos);
     }
     public void visit(varDefNode it) {
         it.singleVarDefs.forEach(svd -> svd.accept(this));
@@ -109,16 +107,17 @@ public class SemanticChecker implements ASTVisitor {
             throw new semanticError("[eq expression] type not match", it.pos);
     }
     public void visit(funcExprNode it) {
-        if (!(it.caller instanceof varExprNode) || !it.caller.type.isVar(varType.BuiltinType.FUNC))
-            throw new semanticError("[function call] call expression not valid", it.pos);
-
-        funcType func = currentScope.getFuncType(((varExprNode) it.caller).identifier, true);
+        it.caller.accept(this);
         it.exprs.forEach(ex -> ex.accept(this));
-        if (func.para.size() != it.exprs.size())
-            throw new semanticError("[function call] parameter number not match", it.pos);
-        for (int i = 0, sz = func.para.size(); i < sz; ++i)
-            if (!func.para.get(i).equal(it.exprs.get(i).type))
-                throw new semanticError("[function call] parameter type not match", it.pos);
+        if (!it.caller.type.isVar(varType.BuiltinType.FUNC))
+            throw new semanticError("[function expression] type wrong", it.pos);
+        funcType fn = it.caller.type.ftype;
+        if (fn.para.size() != it.exprs.size())
+            throw new semanticError("[function expression] parameter number wrong", it.pos);
+        for (int i = 0, sz = fn.para.size(); i < sz; ++i)
+            if (!it.exprs.get(i).type.equal(fn.para.get(i)))
+                throw new semanticError("[function expression] parameter type wrong", it.pos);
+        it.type = new varType(fn.ret);
     }
     public void visit(lambdaExprNode it) {
         it.parameter.accept(this);
@@ -126,25 +125,33 @@ public class SemanticChecker implements ASTVisitor {
         it.exprs.forEach(ex -> ex.accept(this));
         if (it.exprs.size() != it.parameter.singleVarDefs.size())
             throw new semanticError("[lambda expression] parameter number not match", it.pos);
+        // TODO: it.type = ?
         for (int i = 0, sz = it.exprs.size(); i < sz; ++i) {
-            if (it.exprs.get(i).type.equal(it.parameter.singleVarDefs.get(i).varType))
+            if (it.exprs.get(i).type.equal(new varType(it.parameter.singleVarDefs.get(i).typename, gScope)))
                 throw new semanticError("[lambda expression] parameter type not match", it.pos);
         }
     }
     public void visit(literalExprNode it) { ; }
     public void visit(memberExprNode it) {
-        if ()
-        if (it.caller.type.basicType != varType.BuiltinType.CLASS)
+        it.caller.accept(this);
+        if (!it.caller.type.isVar(varType.BuiltinType.CLASS))
             throw new semanticError("[member expression] caller not a class", it.pos);
-        classType ctype = gScope.getClassType(it.caller)
+        classType c = it.caller.type.ctype;
+        funcType fn = c.getFunc(it.member);
+        varType var = c.getVar(it.member);
+        if (fn != null) it.type = new varType(fn);
+        else if (var != null) it.type = new varType(var);
+        else throw new semanticError("[member expression] member not found", it.pos);
     }
     public void visit(newExprNode it) {
-        boolean isNull = false;
+        // TODO: check class type valid
+        it.type = new varType(it.ctx, gScope);
+        boolean nowNull = false;
         for (ExprNode expr : it.dimExpr) {
             if (expr == null)
-                isNull = true;
+                nowNull = true;
             else {
-                if (isNull)
+                if (nowNull)
                     throw new semanticError("[new expression] new on null", expr.pos);
                 expr.accept(this);
                 if (!expr.type.isVar(varType.BuiltinType.INT))
@@ -164,15 +171,31 @@ public class SemanticChecker implements ASTVisitor {
         }
     }
     public void visit(varExprNode it) {
+        // TODO: check class type valid
         if (it.identifier.equals("this")) {
             it.type = new varType(varType.BuiltinType.THIS);
             return ;
         }
-        it.type = currentScope.getVarType(it.identifier, true);
-        if (it.type == null) {
-            if (currentScope.getFuncType(it.identifier, true) != null)
-                it.type = new varType(it.identifier, true);
-        } else it.type = new varType(it.type);
+
+        varType vtype = currentScope.getVarType(it.identifier, true);
+        if (vtype != null) {
+            it.type = new varType(vtype);
+            return ;
+        }
+
+        funcType ftype = currentScope.getFuncType(it.identifier, true);
+        if (ftype != null) {
+            it.type = new varType(ftype);
+            return;
+        }
+
+        classType ctype = gScope.getClassType(it.identifier);
+        if (ctype != null) {
+            it.type = new varType(ctype);
+            return;
+        }
+
+        throw new semanticError("[var expression] type invalid", it.pos);
     }
 
     public void visit(StmtNode it) {}
