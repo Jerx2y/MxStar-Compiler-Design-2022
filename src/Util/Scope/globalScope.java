@@ -16,16 +16,16 @@ public class globalScope extends Scope {
     }
     public void addClass(String name, classType c, position pos) {
         if (classes.containsKey(name) || functions.containsKey(name) || members.containsKey(name))
-            throw new semanticError("multiple definition of class " + name, pos);
+            throw new semanticError("[global scope] multiple definition of class " + name, pos);
         classes.put(name, c);
     }
     public classType getClassTypeFromName(String name, position pos) {
         if (classes.containsKey(name)) return classes.get(name);
-        throw new semanticError("no such class: " + name, pos);
+        throw new semanticError("[global scope] no such class: " + name, pos);
     }
     public void addFunc(String name, funcType f, position pos) {
         if (functions.containsKey(name) || classes.containsKey(name) || members.containsKey(name))
-            throw new semanticError("multiple definition of function " + name, pos);
+            throw new semanticError("[global scope] multiple definition of function " + name, pos);
         functions.put(name, f);
     }
 
@@ -41,7 +41,7 @@ public class globalScope extends Scope {
     @Override
     public void defineVariable(String name, varType t, position pos) {
         if (members.containsKey(name) || classes.containsKey(name) || functions.containsKey(name))
-            throw new semanticError("Semantic Error: variable redefine", pos);
+            throw new semanticError("[global scope] Semantic Error: variable redefine", pos);
         members.put(name, t);
     }
 

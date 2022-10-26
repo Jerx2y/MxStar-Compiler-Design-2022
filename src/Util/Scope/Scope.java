@@ -45,7 +45,7 @@ public class Scope {
     }
 
     public funcType getFuncType(String name, boolean lookUpon) {
-        return null;
+        return parentScope.getFuncType(name, lookUpon);
     }
 
     public classType getClassType(String name) {
@@ -55,6 +55,12 @@ public class Scope {
     public funcType getThisFuncInfo() {
         if (parentScope != null)
             return parentScope.getThisFuncInfo();
+        return null;
+    }
+
+    public classScope getClassScope() {
+        if (parentScope != null)
+            return parentScope.getClassScope();
         return null;
     }
 }

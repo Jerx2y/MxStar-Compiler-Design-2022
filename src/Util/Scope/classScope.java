@@ -31,4 +31,9 @@ public class classScope extends Scope {
             throw new semanticError("Semantic Error: variable redefine", pos);
         members.put(name, t);
     }
+
+    @Override
+    public classScope getClassScope() {
+        return this;
+    }
 }

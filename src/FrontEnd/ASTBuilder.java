@@ -6,10 +6,11 @@ import AST.Expr.*;
 import AST.Stmt.*;
 import Parser.MxBaseVisitor;
 import Parser.MxParser;
-import Util.Type.varType;
 import Util.error.syntaxError;
 import Util.Scope.*;
 import Util.position;
+
+import static java.lang.System.exit;
 
 public class ASTBuilder extends MxBaseVisitor<ASTNode> {
 
@@ -49,8 +50,8 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
 
 
     @Override public ASTNode visitFuncParameter(MxParser.FuncParameterContext ctx) {
-        if (ctx.funcParameterList().isEmpty()) return null;
         varDefNode node = new varDefNode(new position(ctx));
+        if (ctx.funcParameterList() == null) return node;
         for (int i = 0, size = ctx.funcParameterList().typename().size(); i < size; ++i) {
             node.singleVarDefs.add(new singleVarDefNode(ctx.funcParameterList().typename(i), ctx.funcParameterList().Identifier(i).getText(), new position(ctx.funcParameterList())));
         }
@@ -59,30 +60,36 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
 
     @Override public ASTNode visitVarDeclaration(MxParser.VarDeclarationContext ctx) {
         varDefNode node = new varDefNode(new position(ctx));
-        ctx.declarationElement().forEach(de -> node.singleVarDefs.add(new singleVarDefNode(ctx.typename(), de.Identifier().getText(), (ExprNode) visit(de.expression()), new position(de))));
+        for (MxParser.DeclarationElementContext de : ctx.declarationElement()) {
+            singleVarDefNode snode = null;
+            if (de.expression() != null)
+                snode = new singleVarDefNode(ctx.typename(), de.Identifier().getText(), (ExprNode) visit(de.expression()), new position(de));
+            else snode = new singleVarDefNode(ctx.typename(), de.Identifier().getText(), new position(de));
+            node.singleVarDefs.add(snode);
+        }
         return node;
     }
 
     // Statement
 
     @Override public ASTNode visitStatement(MxParser.StatementContext ctx) {
-        if (!ctx.varDeclaration().isEmpty())
+        if (ctx.varDeclaration() != null)
             return new defStmtNode((DefNode) visit(ctx.varDeclaration()), new position(ctx));
-        else if (!ctx.expressionStatement().isEmpty())
+        else if (ctx.expressionStatement() != null)
             return visit(ctx.expressionStatement());
-        else if (!ctx.compoundStatement().isEmpty())
+        else if (ctx.compoundStatement() != null)
             return visit(ctx.compoundStatement());
-        else if (!ctx.selectionStatement().isEmpty())
+        else if (ctx.selectionStatement() != null)
             return visit(ctx.selectionStatement());
-        else if (!ctx.iterationStatement().isEmpty())
+        else if (ctx.iterationStatement() != null)
             return visit(ctx.iterationStatement());
-        else if (!ctx.jumpStatement().isEmpty())
+        else if (ctx.jumpStatement() != null)
             return visit(ctx.jumpStatement());
         else return null;
     }
 
     @Override public ASTNode visitCompoundStatement(MxParser.CompoundStatementContext ctx) {
-        if (ctx.statement().isEmpty()) return null;
+        if (ctx.statement() == null) return null;
         compoundStmtNode node = new compoundStmtNode(new position(ctx));
         ctx.statement().forEach(stmt -> node.stmts.add((StmtNode) visit(stmt)));
         return node;
@@ -93,7 +100,7 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
             StmtNode initial = (StmtNode) visit(ctx.forInitStatement());
             ExprNode step = (ExprNode) visit(ctx.expression());
             ExprNode condition;
-            if (ctx.condition().isEmpty())
+            if (ctx.condition() == null)
                 condition = new literalExprNode(true, new position(ctx.condition()));
             else condition = (ExprNode) visit(ctx.condition());
             return new forStmtNode(initial, condition, step, (StmtNode) visit(ctx.statement()), new position(ctx));
@@ -101,7 +108,7 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
     }
 
     @Override public ASTNode visitForInitStatement(MxParser.ForInitStatementContext ctx) {
-        if (!ctx.expressionStatement().isEmpty())
+        if (ctx.expressionStatement() != null)
             return visit(ctx.expressionStatement());
         else return visit(ctx.varDeclaration());
     }
@@ -121,7 +128,7 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
     }
 
     @Override public ASTNode visitExpressionStatement(MxParser.ExpressionStatementContext ctx) {
-        if (!ctx.expression().isEmpty())
+        if (ctx.expression() == null)
             return new exprStmtNode(null, new position(ctx));
         else return new exprStmtNode((ExprNode) visit(ctx.expression()), new position(ctx));
     }
@@ -277,7 +284,7 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
             return visit(ctx.literal());
         else if (ctx.This() != null) {
             return new varExprNode("this", new position(ctx));
-        } else if (ctx.Identifier() != null)
+        } else if (ctx.Identifier() != null && ctx.Dot() == null)
             return new varExprNode(ctx.Identifier().getText(), new position(ctx));
         else if (ctx.LParen() != null)
             return visit(ctx.expression());

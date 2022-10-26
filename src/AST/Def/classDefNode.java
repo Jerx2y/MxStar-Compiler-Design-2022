@@ -15,6 +15,8 @@ public class classDefNode extends DefNode {
     public classDefNode(position pos, String identifier) {
         super(pos);
         this.identifier = identifier;
+        varDecs = new ArrayList<>();
+        funcDefs = new ArrayList<>();
     }
 
     @Override

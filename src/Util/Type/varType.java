@@ -56,7 +56,8 @@ public class varType {
     public varType(MxParser.TypenameContext ctx, globalScope gScope) {
         BuiltinType basetype;
         classType ctype = null;
-        if (ctx.Int() != null) basetype = BuiltinType.INT;
+        if (ctx == null) basetype = BuiltinType.VOID;
+        else if (ctx.Int() != null) basetype = BuiltinType.INT;
         else if (ctx.Bool() != null) basetype = BuiltinType.BOOL;
         else if (ctx.String() != null) basetype = BuiltinType.STRING;
         else {
@@ -65,7 +66,7 @@ public class varType {
         }
         this.basicType = basetype;
         this.ctype = ctype;
-        this.dimension = ctx.bracket().size();
+        if (ctx != null) this.dimension = ctx.bracket().size();
     }
 
     public boolean equal(varType that) {
@@ -73,7 +74,7 @@ public class varType {
             return false;
         if (ctype != null)
             return ctype.classname.equals(that.ctype.classname);
-        throw new semanticError("[varType equal] type invalid", null);
+        return true;
     }
 
 }

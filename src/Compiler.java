@@ -15,13 +15,13 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.IOException;
 
-
 public class Compiler
 {
-    public static void main(String[] args) throws IOException
+    public static void main(String[] args) throws Exception
     {
 
-        String name = "test.mx";
+        String name = "testcase/basic-package/basic-8.mx";
+        // String name = "testcase/test.mx";
         InputStream input = new FileInputStream(name);
 
         try {

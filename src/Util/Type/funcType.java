@@ -8,4 +8,9 @@ public class funcType  {
     public funcType() {
         para = new ArrayList<>();
     }
+
+    public funcType(varType ret) {
+        this.ret = ret;
+        para = new ArrayList<>();
+    }
 }

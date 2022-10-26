@@ -17,5 +17,7 @@ public class varExprNode extends ExprNode {
     }
 
     @Override
-    public boolean isAssignable() {return true;}
+    public boolean isAssignable() {
+        return true;
+    }
 }

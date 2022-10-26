@@ -9,10 +9,32 @@ import Util.Scope.globalScope;
 import Util.Type.classType;
 import Util.Type.funcType;
 import Util.Type.varType;
+import Util.error.semanticError;
+import Util.position;
 
 public class SymbolCollector implements ASTVisitor {
     private globalScope gScope;
     public SymbolCollector(globalScope gScope) {
+        funcType ftype = new funcType(new varType(varType.BuiltinType.VOID));
+        ftype.para.add(new varType(varType.BuiltinType.STRING));
+        gScope.addFunc("print", ftype, null);
+        gScope.addFunc("println", ftype, null);
+
+        ftype = new funcType(new varType(varType.BuiltinType.VOID));
+        ftype.para.add(new varType(varType.BuiltinType.INT));
+        gScope.addFunc("printInt", ftype, null);
+        gScope.addFunc("printlnInt", ftype, null);
+
+        ftype = new funcType(new varType(varType.BuiltinType.STRING));
+        gScope.addFunc("getString", ftype, null);
+
+        ftype = new funcType(new varType(varType.BuiltinType.INT));
+        gScope.addFunc("getInt", ftype, null);
+
+        ftype = new funcType(new varType(varType.BuiltinType.STRING));
+        ftype.para.add(new varType(varType.BuiltinType.INT));
+        gScope.addFunc("toString", ftype, null);
+
         this.gScope = gScope;
     }
     @Override
@@ -26,9 +48,14 @@ public class SymbolCollector implements ASTVisitor {
         for (DefNode def : it.defs)
             if (def instanceof classDefNode)
                 def.accept(this);
+
         for (DefNode def : it.defs)
             if (def instanceof funcDefNode)
                 def.accept(this);
+
+        funcType mainFn = gScope.getFuncType("main", false);
+        if (mainFn == null || mainFn.para.size() > 0 || !mainFn.ret.isVar(varType.BuiltinType.INT))
+            throw new semanticError("main function invalid", it.pos);
     }
 
     public void visit(DefNode it) {}
@@ -46,7 +73,6 @@ public class SymbolCollector implements ASTVisitor {
             fd.parameter.singleVarDefs.forEach(svd -> fi.para.add(new varType(svd.typename, gScope)));
             ci.addFunc(fd.identifier, fi, fd.pos);
         }
-        gScope.addClass(it.identifier, ci, it.pos);
     }
     public void visit(funcDefNode it) {
         funcType fi = new funcType();
