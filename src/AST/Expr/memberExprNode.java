@@ -21,9 +21,6 @@ public class memberExprNode extends ExprNode {
 
     @Override
     public boolean isAssignable() {
-        return type.basicType != varType.BuiltinType.FUNC &&
-               type.basicType != varType.BuiltinType.VOID &&
-               type.basicType != varType.BuiltinType.THIS &&
-               type.basicType != varType.BuiltinType.NULL;
+        return type.basicType != varType.BuiltinType.FUNC;
     }
 }

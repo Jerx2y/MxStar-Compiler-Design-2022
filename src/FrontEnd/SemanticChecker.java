@@ -10,9 +10,6 @@ import Util.Scope.*;
 import Util.Type.varType;
 import Util.error.semanticError;
 
-import static java.lang.System.exit;
-import static java.lang.System.in;
-
 public class SemanticChecker implements ASTVisitor {
     private Scope currentScope;
     private final globalScope gScope;
@@ -49,12 +46,17 @@ public class SemanticChecker implements ASTVisitor {
     }
     public void visit(singleVarDefNode it) {
         varType itype = new varType(it.typename, gScope);
+        currentScope.defineVariable(it.identifier, itype, it.pos);
         if (it.initExpr != null) {
             it.initExpr.accept(this);
+            if (!itype.isVar(varType.BuiltinType.INT) &&
+                    !itype.isVar(varType.BuiltinType.BOOL) &&
+                    !itype.isVar(varType.BuiltinType.STRING) &&
+                    it.initExpr.type.basicType == varType.BuiltinType.NULL)
+                return ;
             if (!itype.equal(it.initExpr.type))
                 throw new semanticError("[var declaration] initial expression type wrong", it.pos);
         }
-        currentScope.defineVariable(it.identifier, itype, it.pos);
     }
     public void visit(varDefNode it) {
         it.singleVarDefs.forEach(svd -> svd.accept(this));
@@ -77,8 +79,10 @@ public class SemanticChecker implements ASTVisitor {
         if (!it.lhs.isAssignable())
             throw new semanticError("[assign expression] lhs not assignable", it.pos);
         it.type = new varType(it.lhs.type);
-        if ((it.lhs.type.basicType != varType.BuiltinType.INT  && it.lhs.type.basicType != varType.BuiltinType.BOOL || it.lhs.type.isArray()) &&
-             it.rhs.type.basicType == varType.BuiltinType.NULL)
+        if (!it.lhs.type.isVar(varType.BuiltinType.INT) &&
+                !it.lhs.type.isVar(varType.BuiltinType.BOOL) &&
+                !it.lhs.type.isVar(varType.BuiltinType.STRING) &&
+                it.rhs.type.basicType == varType.BuiltinType.NULL)
             return ;
         if (!it.lhs.type.equal(it.rhs.type))
             throw new semanticError("[assign expression] value not match", it.pos);
@@ -119,6 +123,7 @@ public class SemanticChecker implements ASTVisitor {
     public void visit(eqExprNode it) {
         it.lhs.accept(this);
         it.rhs.accept(this);
+        it.type = boolType;
         if (it.lhs.type.isArray() && it.rhs.type.isVar(varType.BuiltinType.NULL) ||
             it.rhs.type.isArray() && it.lhs.type.isVar(varType.BuiltinType.NULL))
             return ;
@@ -139,16 +144,20 @@ public class SemanticChecker implements ASTVisitor {
         it.type = new varType(fn.ret);
     }
     public void visit(lambdaExprNode it) {
+        currentScope = new funcScope(new funcType(), currentScope);
+        currentScope.lookup = it.lookUpon;
         it.parameter.accept(this);
         it.stmts.accept(this);
         it.exprs.forEach(ex -> ex.accept(this));
         if (it.exprs.size() != it.parameter.singleVarDefs.size())
             throw new semanticError("[lambda expression] parameter number not match", it.pos);
-        // TODO: it.type = ?
+        it.type = currentScope.getThisFuncInfo().ret;
+        if (it.type == null) it.type = new varType(varType.BuiltinType.VOID);
         for (int i = 0, sz = it.exprs.size(); i < sz; ++i) {
             if (it.exprs.get(i).type.equal(new varType(it.parameter.singleVarDefs.get(i).typename, gScope)))
                 throw new semanticError("[lambda expression] parameter type not match", it.pos);
         }
+        currentScope = currentScope.parentScope();
     }
     public void visit(literalExprNode it) { ; }
     public void visit(memberExprNode it) {
@@ -219,10 +228,13 @@ public class SemanticChecker implements ASTVisitor {
             if (!it.expr.type.isVar(varType.BuiltinType.BOOL))
                 throw new semanticError("[unary expression] expr type wrong (I)", it.pos);
         } else {
-
             if (!it.expr.type.isVar(varType.BuiltinType.INT))
                 throw new semanticError("[unary expression] expr type wrong (II)", it.pos);
         }
+        if (it.opCode == unaryExprNode.unaryOpType.DOUBLE_ADD || it.opCode == unaryExprNode.unaryOpType.DOUBLE_SUB ||
+            it.opCode == unaryExprNode.unaryOpType.R_DOUBLE_ADD || it.opCode == unaryExprNode.unaryOpType.R_DOUBLE_SUB)
+            if (!it.expr.isAssignable())
+                throw new semanticError("[unary expression] ++-- expression not assignable", it.pos);
     }
     public void visit(varExprNode it) {
 
@@ -273,7 +285,7 @@ public class SemanticChecker implements ASTVisitor {
         inLoop++;
         it.initial.accept(this);
         it.condition.accept(this);
-        it.step.accept(this);
+        if (it.step != null) it.step.accept(this);
         it.stmt.accept(this);
         if (!it.condition.type.isVar(varType.BuiltinType.BOOL))
             throw new semanticError("[for statement] condition type wrong", it.condition.pos);
@@ -294,10 +306,14 @@ public class SemanticChecker implements ASTVisitor {
             throw new semanticError("[return statement] return position wrong", it.pos);
         if (it.value != null) {
             it.value.accept(this);
+            if (nowFunc.ret == null)
+                nowFunc.ret = it.value.type;
             if (!it.value.type.equal(nowFunc.ret))
                 throw new semanticError("[return statement] return type wrong (I)", it.pos);
-        } else if (!nowFunc.ret.isVar(varType.BuiltinType.VOID))
-            throw new semanticError("[return statement] return type wrong (II)", it.pos);
+        } else if (nowFunc.ret.isVar(varType.BuiltinType.VOID)) {
+            if (nowFunc.ret == null)
+                nowFunc.ret = new varType(varType.BuiltinType.VOID);
+        } else throw new semanticError("[return statement] return type wrong (II)", it.pos);
     }
     public void visit(whileStmtNode it) {
         currentScope = new Scope(currentScope);

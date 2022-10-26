@@ -21,4 +21,9 @@ public class unaryExprNode extends ExprNode {
     public void accept(ASTVisitor visitor) {
         visitor.visit(this);
     }
+
+    @Override
+    public boolean isAssignable() {
+        return opCode == unaryOpType.DOUBLE_ADD || opCode == unaryOpType.DOUBLE_SUB;
+    }
 }

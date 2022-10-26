@@ -8,14 +8,14 @@ import Util.position;
 import java.util.ArrayList;
 
 public class lambdaExprNode extends ExprNode {
-    public boolean haveAnd;
+    public boolean lookUpon;
     public varDefNode parameter;
     public StmtNode stmts;
     public ArrayList<ExprNode> exprs;
 
-    public lambdaExprNode(boolean haveAnd, varDefNode paramter, StmtNode stmts, position pos) {
+    public lambdaExprNode(boolean lookUpon, varDefNode paramter, StmtNode stmts, position pos) {
         super(pos);
-        this.haveAnd = haveAnd;
+        this.lookUpon = lookUpon;
         this.parameter = paramter;
         this.stmts = stmts;
         exprs = new ArrayList<>();

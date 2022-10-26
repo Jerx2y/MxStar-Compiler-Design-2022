@@ -13,7 +13,7 @@ public class Scope {
 
     protected HashMap<String, varType> members;
     protected Scope parentScope;
-
+    public boolean lookup = true;
 
     public Scope(Scope parentScope) {
         members = new HashMap<>();
@@ -32,14 +32,14 @@ public class Scope {
 
     public boolean containsVariable(String name, boolean lookUpon) {
         if (members.containsKey(name)) return true;
-        else if (parentScope != null && lookUpon)
+        else if (parentScope != null && lookUpon && lookup)
             return parentScope.containsVariable(name, true);
         else return false;
     }
 
     public varType getVarType(String name, boolean lookUpon) {
         if (members.containsKey(name)) return members.get(name);
-        else if (parentScope != null && lookUpon)
+        else if (parentScope != null && lookUpon && lookup)
             return parentScope.getVarType(name, true);
         return null;
     }

@@ -98,10 +98,11 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
     @Override public ASTNode visitIterationStatement(MxParser.IterationStatementContext ctx) {
         if (ctx.For() != null) {
             StmtNode initial = (StmtNode) visit(ctx.forInitStatement());
-            ExprNode step = (ExprNode) visit(ctx.expression());
+            ExprNode step = null;
+            if (ctx.expression() != null) step = (ExprNode) visit(ctx.expression());
             ExprNode condition;
             if (ctx.condition() == null)
-                condition = new literalExprNode(true, new position(ctx.condition()));
+                condition = new literalExprNode(true, new position(ctx));
             else condition = (ExprNode) visit(ctx.condition());
             return new forStmtNode(initial, condition, step, (StmtNode) visit(ctx.statement()), new position(ctx));
         } else return new whileStmtNode((ExprNode) visit(ctx.condition()), (StmtNode) visit(ctx.statement()), new position(ctx));
