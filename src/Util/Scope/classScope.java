@@ -9,12 +9,14 @@ import Util.position;
 import java.util.HashMap;
 
 public class classScope extends Scope {
+    public final String classname;
     private final HashMap<String, funcType> functions;
 
     public classScope(classType info, Scope parentScope) {
         super(parentScope);
         members = info.getVarsList();
         functions = info.getFuncList();
+        classname = info.classname;
     }
 
     public funcType getFuncType(String name, boolean lookUpon) {

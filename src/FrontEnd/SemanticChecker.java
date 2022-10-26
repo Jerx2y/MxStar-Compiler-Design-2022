@@ -46,7 +46,6 @@ public class SemanticChecker implements ASTVisitor {
     }
     public void visit(singleVarDefNode it) {
         varType itype = new varType(it.typename, gScope);
-        currentScope.defineVariable(it.identifier, itype, it.pos);
         if (it.initExpr != null) {
             it.initExpr.accept(this);
             if (!itype.isVar(varType.BuiltinType.INT) &&
@@ -57,6 +56,7 @@ public class SemanticChecker implements ASTVisitor {
             if (!itype.equal(it.initExpr.type))
                 throw new semanticError("[var declaration] initial expression type wrong", it.pos);
         }
+        currentScope.defineVariable(it.identifier, itype, it.pos);
     }
     public void visit(varDefNode it) {
         it.singleVarDefs.forEach(svd -> svd.accept(this));
@@ -154,7 +154,7 @@ public class SemanticChecker implements ASTVisitor {
         it.type = currentScope.getThisFuncInfo().ret;
         if (it.type == null) it.type = new varType(varType.BuiltinType.VOID);
         for (int i = 0, sz = it.exprs.size(); i < sz; ++i) {
-            if (it.exprs.get(i).type.equal(new varType(it.parameter.singleVarDefs.get(i).typename, gScope)))
+            if (!it.exprs.get(i).type.equal(new varType(it.parameter.singleVarDefs.get(i).typename, gScope)))
                 throw new semanticError("[lambda expression] parameter type not match", it.pos);
         }
         currentScope = currentScope.parentScope();
@@ -294,9 +294,14 @@ public class SemanticChecker implements ASTVisitor {
     }
     public void visit(ifStmtNode it) {
         it.condition.accept(this);
+        currentScope = new Scope(currentScope);
         it.thenStmt.accept(this);
-        if (it.elseStmt != null)
+        currentScope = currentScope.parentScope();
+        if (it.elseStmt != null) {
+            currentScope = new Scope(currentScope);
             it.elseStmt.accept(this);
+            currentScope = currentScope.parentScope();
+        }
         if (!it.condition.type.isVar(varType.BuiltinType.BOOL))
             throw new semanticError("[if statement] condition type wrong", it.condition.pos);
     }
@@ -306,6 +311,12 @@ public class SemanticChecker implements ASTVisitor {
             throw new semanticError("[return statement] return position wrong", it.pos);
         if (it.value != null) {
             it.value.accept(this);
+            if (it.value.type.isVar(varType.BuiltinType.THIS)) {
+                if (nowFunc.ret.basicType != varType.BuiltinType.CLASS ||
+                        !nowFunc.ret.ctype.classname.equals(currentScope.getClassScope().classname))
+                    throw new semanticError("[return statement] 'return this' invalid", it.pos);
+                return;
+            }
             if (nowFunc.ret == null)
                 nowFunc.ret = it.value.type;
             if (!it.value.type.equal(nowFunc.ret))
