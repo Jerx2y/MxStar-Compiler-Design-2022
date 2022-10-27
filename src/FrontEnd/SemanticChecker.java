@@ -36,9 +36,11 @@ public class SemanticChecker implements ASTVisitor {
     public void visit(classDefNode it) {
         currentScope = new classScope(gScope.getClassTypeFromName(it.identifier, it.pos), currentScope);
         it.funcDefs.forEach(fd -> fd.accept(this));
-        currentScope = new funcScope(new funcType(new varType(varType.BuiltinType.VOID)), currentScope);
-        it.constructor.accept(this);
-        currentScope = currentScope.parentScope();
+        if (it.constructor != null) {
+            currentScope = new funcScope(new funcType(new varType(varType.BuiltinType.VOID)), currentScope);
+            it.constructor.accept(this);
+            currentScope = currentScope.parentScope();
+        }
         currentScope = currentScope.parentScope();
     }
     public void visit(funcDefNode it) {
