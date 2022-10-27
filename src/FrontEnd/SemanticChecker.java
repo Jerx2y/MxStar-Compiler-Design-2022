@@ -129,9 +129,6 @@ public class SemanticChecker implements ASTVisitor {
         it.lhs.accept(this);
         it.rhs.accept(this);
         it.type = boolType;
-        // if (it.lhs.type.isArray() && it.rhs.type.isVar(varType.BuiltinType.NULL) ||
-        //     it.rhs.type.isArray() && it.lhs.type.isVar(varType.BuiltinType.NULL))
-        //     return ;
         if (!it.lhs.type.equal(it.rhs.type))
             throw new semanticError("[eq expression] type not match", it.pos);
     }
@@ -164,7 +161,7 @@ public class SemanticChecker implements ASTVisitor {
         }
         currentScope = currentScope.parentScope();
     }
-    public void visit(literalExprNode it) { ; }
+    public void visit(literalExprNode it) { }
     public void visit(memberExprNode it) {
         it.caller.accept(this);
         if (it.caller.type.isArray()) {
@@ -173,17 +170,6 @@ public class SemanticChecker implements ASTVisitor {
             it.type = new varType(new funcType(intType));
             return ;
         }
-//        if (it.caller.type.isVar(varType.BuiltinType.THIS)) {
-//            classScope cs = currentScope.getClassScope();
-//            if (cs == null)
-//                throw new semanticError("[member expression] 'this' in wrong place", it.caller.pos);
-//            funcType fn = cs.getFuncType(it.member, false);
-//            varType var = cs.getVarType(it.member, false);
-//            if (fn != null) it.type = new varType(fn);
-//            else if (var != null) it.type = new varType(var);
-//            else throw new semanticError("[member expression] identifier undefined in class", it.pos);
-//            return ;
-//        }
         if (it.caller.type.isVar(varType.BuiltinType.STRING)) {
             if (it.member.equals("length"))
                 it.type = new varType(new funcType(intType));
@@ -211,7 +197,6 @@ public class SemanticChecker implements ASTVisitor {
         else throw new semanticError("[member expression] member not found", it.pos);
     }
     public void visit(newExprNode it) {
-        // TODO: check class type valid
         it.type = new varType(it.ctx, gScope);
         boolean nowNull = false;
         for (ExprNode expr : it.dimExpr) {
@@ -242,7 +227,6 @@ public class SemanticChecker implements ASTVisitor {
                 throw new semanticError("[unary expression] ++-- expression not assignable", it.pos);
     }
     public void visit(varExprNode it) {
-
         if (it.identifier.equals("this")) {
             classScope cs = currentScope.getClassScope();
             if (cs == null)
@@ -314,12 +298,6 @@ public class SemanticChecker implements ASTVisitor {
             throw new semanticError("[return statement] return position wrong", it.pos);
         if (it.value != null) {
             it.value.accept(this);
-//            if (it.value.type.isVar(varType.BuiltinType.THIS)) {
-//                if (nowFunc.ret.basicType != varType.BuiltinType.CLASS ||
-//                        !nowFunc.ret.ctype.classname.equals(currentScope.getClassScope().classname))
-//                    throw new semanticError("[return statement] 'return this' invalid", it.pos);
-//                return;
-//            }
             if (nowFunc.ret == null)
                 nowFunc.ret = it.value.type;
             if (!it.value.type.equal(nowFunc.ret))
