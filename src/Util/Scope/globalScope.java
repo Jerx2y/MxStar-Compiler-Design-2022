@@ -5,6 +5,7 @@ import Util.Type.classType;
 import Util.Type.funcType;
 import Util.error.semanticError;
 import Util.position;
+import org.antlr.v4.runtime.misc.Pair;
 
 import java.util.HashMap;
 
@@ -48,5 +49,19 @@ public class globalScope extends Scope {
     @Override
     public classType getClassType(String name) {
         return classes.get(name);
+    }
+
+
+    @Override
+    public Pair<varType, funcType> getIdentifier(String name, boolean lookUpon) {
+        varType vtype = members.get(name);
+        funcType ftype = functions.get(name);
+        if (vtype != null)
+            return new Pair<>(vtype, null);
+        if (ftype != null)
+            return new Pair<>(null, ftype);
+        if (parentScope != null && lookUpon && lookup)
+            return parentScope.getIdentifier(name, true);
+        return new Pair<>(null, null);
     }
 }

@@ -6,6 +6,7 @@ import Util.Type.funcType;
 import Util.Type.varType;
 import Util.error.semanticError;
 import Util.position;
+import org.antlr.v4.runtime.misc.Pair;
 
 import java.util.HashMap;
 
@@ -26,15 +27,10 @@ public class Scope {
 
     public void defineVariable(String name, varType t, position pos) {
         if (members.containsKey(name))
-            throw new semanticError("Semantic Error: variable redefine", pos);
+            throw new semanticError("variable redefine", pos);
+        if (parentScope != null && parentScope.getClassType(name) != null)
+            throw new semanticError("define variable with class name", pos);
         members.put(name, t);
-    }
-
-    public boolean containsVariable(String name, boolean lookUpon) {
-        if (members.containsKey(name)) return true;
-        else if (parentScope != null && lookUpon && lookup)
-            return parentScope.containsVariable(name, true);
-        else return false;
     }
 
     public varType getVarType(String name, boolean lookUpon) {
@@ -62,5 +58,14 @@ public class Scope {
         if (parentScope != null)
             return parentScope.getClassScope();
         return null;
+    }
+
+    public Pair<varType, funcType> getIdentifier(String name, boolean lookUpon) {
+        varType vtype = members.get(name);
+        if (vtype != null)
+            return new Pair<>(vtype, null);
+        if (parentScope != null && lookUpon && lookup)
+            return parentScope.getIdentifier(name, true);
+        return new Pair<>(null, null);
     }
 }

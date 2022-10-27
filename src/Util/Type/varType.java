@@ -70,6 +70,9 @@ public class varType {
     }
 
     public boolean equal(varType that) {
+        if (this.isVar(BuiltinType.NULL) && (that.isVar(BuiltinType.CLASS) || that.isArray()) ||
+            that.isVar(BuiltinType.NULL) && (this.isVar(BuiltinType.CLASS) || this.isArray()))
+            return true;
         if (this.basicType != that.basicType || this.dimension != that.dimension)
             return false;
         if (ctype != null)

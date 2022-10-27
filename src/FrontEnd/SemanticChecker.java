@@ -9,6 +9,7 @@ import Util.Type.funcType;
 import Util.Scope.*;
 import Util.Type.varType;
 import Util.error.semanticError;
+import org.antlr.v4.runtime.misc.Pair;
 
 public class SemanticChecker implements ASTVisitor {
     private Scope currentScope;
@@ -128,9 +129,9 @@ public class SemanticChecker implements ASTVisitor {
         it.lhs.accept(this);
         it.rhs.accept(this);
         it.type = boolType;
-        if (it.lhs.type.isArray() && it.rhs.type.isVar(varType.BuiltinType.NULL) ||
-            it.rhs.type.isArray() && it.lhs.type.isVar(varType.BuiltinType.NULL))
-            return ;
+        // if (it.lhs.type.isArray() && it.rhs.type.isVar(varType.BuiltinType.NULL) ||
+        //     it.rhs.type.isArray() && it.lhs.type.isVar(varType.BuiltinType.NULL))
+        //     return ;
         if (!it.lhs.type.equal(it.rhs.type))
             throw new semanticError("[eq expression] type not match", it.pos);
     }
@@ -251,25 +252,19 @@ public class SemanticChecker implements ASTVisitor {
             return ;
         }
 
-        varType vtype = currentScope.getVarType(it.identifier, true);
-        if (vtype != null) {
-            it.type = new varType(vtype);
-            return ;
-        }
-
-        funcType ftype = currentScope.getFuncType(it.identifier, true);
-        if (ftype != null) {
-            it.type = new varType(ftype);
-            return;
-        }
-
         classType ctype = gScope.getClassType(it.identifier);
         if (ctype != null) {
             it.type = new varType(ctype);
             return;
         }
 
-        throw new semanticError("[var expression] identifier '" + it.identifier + "' undefined", it.pos);
+        Pair<varType, funcType> vftype = currentScope.getIdentifier(it.identifier, true);
+
+        if (vftype.a != null)
+            it.type = new varType(vftype.a);
+        else if (vftype.b != null)
+            it.type = new varType(vftype.b);
+        else throw new semanticError("[var expression] identifier '" + it.identifier + "' undefined", it.pos);
     }
 
     public void visit(StmtNode it) {}
