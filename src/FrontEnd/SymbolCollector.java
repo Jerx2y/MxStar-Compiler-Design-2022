@@ -10,6 +10,7 @@ import Util.Type.classType;
 import Util.Type.funcType;
 import Util.Type.varType;
 import Util.error.semanticError;
+import Util.error.syntaxError;
 import Util.position;
 
 public class SymbolCollector implements ASTVisitor {
@@ -68,6 +69,8 @@ public class SymbolCollector implements ASTVisitor {
             }
         }
         for (funcDefNode fd : it.funcDefs) {
+            if (fd.identifier.equals(it.identifier))
+                throw new syntaxError("[class definition] class constructor type wrong", fd.pos);
             funcType fi = new funcType();
             fi.ret = new varType(fd.retype, gScope);
             fd.parameter.singleVarDefs.forEach(svd -> fi.para.add(new varType(svd.typename, gScope)));

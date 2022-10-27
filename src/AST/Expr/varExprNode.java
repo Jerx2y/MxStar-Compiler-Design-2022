@@ -18,6 +18,6 @@ public class varExprNode extends ExprNode {
 
     @Override
     public boolean isAssignable() {
-        return true;
+        return !identifier.equals("this");
     }
 }

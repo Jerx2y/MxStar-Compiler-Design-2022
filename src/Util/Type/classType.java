@@ -14,6 +14,11 @@ public class classType {
         func = new HashMap<>();
         classname = name;
     }
+    public classType(String name, HashMap<String, varType> vars, HashMap<String, funcType> func) {
+        classname = name;
+        this.vars = vars;
+        this.func = func;
+    }
     public void addVar(String name, varType varType, position pos) {
         if (vars.containsKey(name))
             throw new semanticError("multiple definition of var " + name + " in class", pos);
@@ -38,4 +43,5 @@ public class classType {
     public funcType getFunc(String name) {
         return func.get(name);
     }
+
 }

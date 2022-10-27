@@ -20,10 +20,10 @@ public class Compiler
     public static void main(String[] args) throws Exception
     {
 
-        // String name = "testcase/misc-package/misc-37.mx";
-        // // String name = "testcase/test.mx";
-        // InputStream input = new FileInputStream(name);
-        InputStream input = System.in;
+        String name = "testcase/class-package/class-8.mx";
+        // String name = "testcase/test.mx";
+        InputStream input = new FileInputStream(name);
+        // InputStream input = System.in;
 
         try {
             RootNode ASTRoot;

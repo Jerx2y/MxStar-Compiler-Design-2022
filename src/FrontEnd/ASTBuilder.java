@@ -37,7 +37,11 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
         ctx.varDeclaration().forEach(vd -> node.varDecs.add((varDefNode) visit(vd)));
         if (ctx.classConstruction().size() > 1)
             throw new syntaxError("Construction of class > 1", new position(ctx));
-        ctx.classConstruction().forEach(cc -> node.constructor = (StmtNode) visit(cc));
+        if (ctx.classConstruction().size() == 1) {
+            if (!ctx.classConstruction(0).Identifier().getText().equals(ctx.Identifier().getText()))
+                throw new syntaxError("Construction name wrong", new position(ctx.classConstruction(0)));
+            node.constructor = (StmtNode) visit(ctx.classConstruction(0));
+        }
         return node;
     }
 

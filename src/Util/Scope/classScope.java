@@ -38,4 +38,11 @@ public class classScope extends Scope {
     public classScope getClassScope() {
         return this;
     }
+
+    public HashMap<String, varType> getVarsList() {
+        return members;
+    }
+    public HashMap<String, funcType> getFuncList() {
+        return functions;
+    }
 }
