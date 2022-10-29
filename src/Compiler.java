@@ -14,14 +14,12 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
-public class Compiler
-{
-    public static void main(String[] args) throws Exception
-    {
+public class Compiler {
+    public static void main(String[] args) throws Exception {
 
-        // String name = "testcase/basic-package/basic-47.mx";
-        // InputStream input = new FileInputStream(name);
-        InputStream input = System.in;
+        String name = "testcase/test.mx";
+        InputStream input = new FileInputStream(name);
+        // InputStream input = System.in;
 
         try {
             RootNode ASTRoot;

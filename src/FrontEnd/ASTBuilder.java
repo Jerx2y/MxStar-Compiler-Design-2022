@@ -115,7 +115,7 @@ public class ASTBuilder extends MxBaseVisitor<ASTNode> {
     @Override public ASTNode visitForInitStatement(MxParser.ForInitStatementContext ctx) {
         if (ctx.expressionStatement() != null)
             return visit(ctx.expressionStatement());
-        else return visit(ctx.varDeclaration());
+        else return new defStmtNode((DefNode) visit(ctx.varDeclaration()), new position(ctx));
     }
 
     @Override public ASTNode visitSelectionStatement(MxParser.SelectionStatementContext ctx) {
