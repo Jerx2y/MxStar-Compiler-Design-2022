@@ -96,7 +96,9 @@ public class SymbolCollector implements ASTVisitor {
             if (fd.identifier.equals(it.identifier))
                 throw new syntaxError("[class definition] class constructor type wrong", fd.pos);
             funcType fi = new funcType();
-            fi.ret = new classType(fd.retype, gScope);
+            if (fd.retype != null)
+                fi.ret = new classType(fd.retype, gScope);
+            else fi.ret = new classType("void");
             fd.parameter.singleVarDefs.forEach(svd -> fi.para.add(new classType(svd.typename, gScope)));
             ci.addFunc(fd.identifier, fi, fd.pos);
         }
