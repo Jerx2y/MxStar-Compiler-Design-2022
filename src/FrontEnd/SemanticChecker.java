@@ -163,23 +163,6 @@ public class SemanticChecker implements ASTVisitor {
             it.type = new funcType(intType);
             return ;
         }
-//        if (it.caller.type.isVar(varType.BuiltinType.STRING)) {
-//            if (it.member.equals("length"))
-//                it.type = new varType(new funcType(intType));
-//            else if (it.member.equals("substring")) {
-//                funcType fn = new funcType(stringType);
-//                fn.para.add(intType);
-//                fn.para.add(intType);
-//                it.type = new varType(fn);
-//            } else if (it.member.equals("parseInt"))
-//                it.type = new varType(new funcType(intType));
-//            else if (it.member.equals("ord")) {
-//                funcType fn = new funcType(intType);
-//                fn.para.add(intType);
-//                it.type = new varType(fn);
-//            } else throw new semanticError("[member expression] string method undefined", it.pos);
-//            return ;
-//        }
         if (!(it.caller.type instanceof classType))
             throw new semanticError("[member expression] caller type wrong", it.caller.pos);
         classType c = (classType) it.caller.type;
