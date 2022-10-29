@@ -20,7 +20,7 @@ public class Compiler
     public static void main(String[] args) throws Exception
     {
 
-        // String name = "testcase/scope-package/scope-1.mx";
+        // String name = "testcase/basic-package/basic-4.mx";
         // InputStream input = new FileInputStream(name);
         InputStream input = System.in;
 

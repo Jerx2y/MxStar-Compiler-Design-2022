@@ -3,7 +3,6 @@ package AST.Def;
 import AST.ASTVisitor;
 import AST.Stmt.StmtNode;
 import Parser.MxParser;
-import Util.Type.varType;
 import Util.position;
 
 import java.util.ArrayList;

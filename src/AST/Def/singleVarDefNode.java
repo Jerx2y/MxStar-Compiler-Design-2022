@@ -3,7 +3,6 @@ package AST.Def;
 import AST.ASTVisitor;
 import AST.Expr.ExprNode;
 import Parser.MxParser;
-import Util.Type.varType;
 import Util.position;
 
 public class singleVarDefNode extends DefNode {

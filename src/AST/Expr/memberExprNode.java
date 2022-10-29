@@ -1,7 +1,7 @@
 package AST.Expr;
 
 import AST.ASTVisitor;
-import Util.Type.varType;
+import Util.Type.classType;
 import Util.position;
 
 public class memberExprNode extends ExprNode {
@@ -21,6 +21,6 @@ public class memberExprNode extends ExprNode {
 
     @Override
     public boolean isAssignable() {
-        return type.basicType != varType.BuiltinType.FUNC;
+        return type instanceof classType;
     }
 }

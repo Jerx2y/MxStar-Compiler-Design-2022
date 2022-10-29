@@ -1,6 +1,5 @@
 package Util.Scope;
 
-import Util.Type.varType;
 import Util.Type.classType;
 import Util.Type.funcType;
 import Util.error.semanticError;
@@ -15,15 +14,13 @@ public class globalScope extends Scope {
     public globalScope(Scope parentScope) {
         super(parentScope);
     }
+
     public void addClass(String name, classType c, position pos) {
         if (classes.containsKey(name) || functions.containsKey(name) || members.containsKey(name))
             throw new semanticError("[global scope] multiple definition of class " + name, pos);
         classes.put(name, c);
     }
-    public classType getClassTypeFromName(String name, position pos) {
-        if (classes.containsKey(name)) return classes.get(name);
-        throw new semanticError("[global scope] no such class: " + name, pos);
-    }
+
     public void addFunc(String name, funcType f, position pos) {
         if (functions.containsKey(name) || classes.containsKey(name) || members.containsKey(name))
             throw new semanticError("[global scope] multiple definition of function " + name, pos);
@@ -31,19 +28,19 @@ public class globalScope extends Scope {
     }
 
     @Override
-    public funcType getFuncType(String name, boolean lookUpon) {
-        if (functions.containsKey(name))
-            return functions.get(name);
-        if (parentScope != null && lookUpon)
-            return parentScope.getFuncType(name, true);
-        return null;
+    public void defineVariable(String name, classType t, position pos) {
+        if (members.containsKey(name) || classes.containsKey(name) || functions.containsKey(name))
+            throw new semanticError("[global scope] variable redefine", pos);
+        members.put(name, t);
     }
 
     @Override
-    public void defineVariable(String name, varType t, position pos) {
-        if (members.containsKey(name) || classes.containsKey(name) || functions.containsKey(name))
-            throw new semanticError("[global scope] Semantic Error: variable redefine", pos);
-        members.put(name, t);
+    public funcType getFuncType(String name) {
+        if (functions.containsKey(name))
+            return functions.get(name);
+        if (parentScope != null)
+            return parentScope.getFuncType(name);
+        return null;
     }
 
     @Override
@@ -51,17 +48,16 @@ public class globalScope extends Scope {
         return classes.get(name);
     }
 
-
     @Override
-    public Pair<varType, funcType> getIdentifier(String name, boolean lookUpon) {
-        varType vtype = members.get(name);
+    public Pair<classType, funcType> getIdentifier(String name) {
+        classType vtype = members.get(name);
         funcType ftype = functions.get(name);
         if (vtype != null)
             return new Pair<>(vtype, null);
         if (ftype != null)
             return new Pair<>(null, ftype);
-        if (parentScope != null && lookUpon && lookup)
-            return parentScope.getIdentifier(name, true);
+        if (parentScope != null && lookup)
+            return parentScope.getIdentifier(name);
         return new Pair<>(null, null);
     }
 }

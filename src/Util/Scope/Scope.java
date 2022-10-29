@@ -3,7 +3,6 @@ package Util.Scope;
 // import MIR.register;
 import Util.Type.classType;
 import Util.Type.funcType;
-import Util.Type.varType;
 import Util.error.semanticError;
 import Util.position;
 import org.antlr.v4.runtime.misc.Pair;
@@ -12,7 +11,7 @@ import java.util.HashMap;
 
 public class Scope {
 
-    protected HashMap<String, varType> members;
+    protected HashMap<String, classType> members;
     protected Scope parentScope;
     public boolean lookup = true;
 
@@ -25,23 +24,23 @@ public class Scope {
         return parentScope;
     }
 
-    public void defineVariable(String name, varType t, position pos) {
+    public void defineVariable(String name, classType t, position pos) {
         if (members.containsKey(name))
-            throw new semanticError("variable redefine", pos);
+            throw new semanticError("[define variable] variable redefine", pos);
         if (parentScope != null && parentScope.getClassType(name) != null)
-            throw new semanticError("define variable with class name", pos);
+            throw new semanticError("[define variable] variable name invalid", pos);
         members.put(name, t);
     }
 
-    public varType getVarType(String name, boolean lookUpon) {
+    public classType getVarType(String name) {
         if (members.containsKey(name)) return members.get(name);
-        else if (parentScope != null && lookUpon && lookup)
-            return parentScope.getVarType(name, true);
+        else if (parentScope != null && lookup)
+            return parentScope.getVarType(name);
         return null;
     }
 
-    public funcType getFuncType(String name, boolean lookUpon) {
-        return parentScope.getFuncType(name, lookUpon);
+    public funcType getFuncType(String name) {
+        return parentScope.getFuncType(name);
     }
 
     public classType getClassType(String name) {
@@ -60,12 +59,12 @@ public class Scope {
         return null;
     }
 
-    public Pair<varType, funcType> getIdentifier(String name, boolean lookUpon) {
-        varType vtype = members.get(name);
+    public Pair<classType, funcType> getIdentifier(String name) {
+        classType vtype = members.get(name);
         if (vtype != null)
             return new Pair<>(vtype, null);
-        if (parentScope != null && lookUpon && lookup)
-            return parentScope.getIdentifier(name, true);
+        if (parentScope != null && lookup)
+            return parentScope.getIdentifier(name);
         return new Pair<>(null, null);
     }
 }

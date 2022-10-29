@@ -8,32 +8,56 @@ import AST.RootNode;
 import Util.Scope.globalScope;
 import Util.Type.classType;
 import Util.Type.funcType;
-import Util.Type.varType;
 import Util.error.semanticError;
 import Util.error.syntaxError;
-import Util.position;
 
 public class SymbolCollector implements ASTVisitor {
     private globalScope gScope;
     public SymbolCollector(globalScope gScope) {
-        funcType ftype = new funcType(new varType(varType.BuiltinType.VOID));
-        ftype.para.add(new varType(varType.BuiltinType.STRING));
+        classType intType = new classType("int");
+        classType boolType = new classType("bool");
+        classType stringType = new classType("string");
+        classType voidType = new classType("void");
+        funcType ftype;
+
+        ftype = new funcType(intType);
+        stringType.addFunc("length", ftype, null);
+
+        ftype = new funcType(stringType);
+        ftype.para.add(intType);
+        ftype.para.add(intType);
+        stringType.addFunc("substring", ftype, null);
+
+        ftype = new funcType(intType);
+        stringType.addFunc("parseInt", ftype, null);
+
+        ftype = new funcType(intType);
+        ftype.para.add(intType);
+        stringType.addFunc("ord", ftype, null);
+
+        gScope.addClass("int", intType, null);
+        gScope.addClass("bool", boolType, null);
+        gScope.addClass("string", stringType, null);
+        gScope.addClass("void", voidType, null);
+
+        ftype = new funcType(voidType);
+        ftype.para.add(stringType);
         gScope.addFunc("print", ftype, null);
         gScope.addFunc("println", ftype, null);
 
-        ftype = new funcType(new varType(varType.BuiltinType.VOID));
-        ftype.para.add(new varType(varType.BuiltinType.INT));
+        ftype = new funcType(voidType);
+        ftype.para.add(intType);
         gScope.addFunc("printInt", ftype, null);
         gScope.addFunc("printlnInt", ftype, null);
 
-        ftype = new funcType(new varType(varType.BuiltinType.STRING));
+        ftype = new funcType(stringType);
         gScope.addFunc("getString", ftype, null);
 
-        ftype = new funcType(new varType(varType.BuiltinType.INT));
+        ftype = new funcType(intType);
         gScope.addFunc("getInt", ftype, null);
 
-        ftype = new funcType(new varType(varType.BuiltinType.STRING));
-        ftype.para.add(new varType(varType.BuiltinType.INT));
+        ftype = new funcType(stringType);
+        ftype.para.add(intType);
         gScope.addFunc("toString", ftype, null);
 
         this.gScope = gScope;
@@ -54,8 +78,8 @@ public class SymbolCollector implements ASTVisitor {
             if (def instanceof funcDefNode)
                 def.accept(this);
 
-        funcType mainFn = gScope.getFuncType("main", false);
-        if (mainFn == null || mainFn.para.size() > 0 || !mainFn.ret.isVar(varType.BuiltinType.INT))
+        funcType mainFn = gScope.getFuncType("main");
+        if (mainFn == null || mainFn.para.size() > 0 || !mainFn.ret.isType("int"))
             throw new semanticError("main function invalid", it.pos);
     }
 
@@ -64,7 +88,7 @@ public class SymbolCollector implements ASTVisitor {
         classType ci = gScope.getClassType(it.identifier);
         for (varDefNode vd : it.varDecs) {
             for (singleVarDefNode svd : vd.singleVarDefs) {
-                varType vtype = new varType(svd.typename, gScope);
+                classType vtype = new classType(svd.typename, gScope);
                 ci.addVar(svd.identifier, vtype, svd.pos);
             }
         }
@@ -72,15 +96,17 @@ public class SymbolCollector implements ASTVisitor {
             if (fd.identifier.equals(it.identifier))
                 throw new syntaxError("[class definition] class constructor type wrong", fd.pos);
             funcType fi = new funcType();
-            fi.ret = new varType(fd.retype, gScope);
-            fd.parameter.singleVarDefs.forEach(svd -> fi.para.add(new varType(svd.typename, gScope)));
+            fi.ret = new classType(fd.retype, gScope);
+            fd.parameter.singleVarDefs.forEach(svd -> fi.para.add(new classType(svd.typename, gScope)));
             ci.addFunc(fd.identifier, fi, fd.pos);
         }
     }
     public void visit(funcDefNode it) {
         funcType fi = new funcType();
-        fi.ret = new varType(it.retype, gScope);
-        it.parameter.singleVarDefs.forEach(svd -> fi.para.add(new varType(svd.typename, gScope)));
+        if (it.retype != null)
+            fi.ret = new classType(it.retype, gScope);
+        else fi.ret = new classType("void");
+        it.parameter.singleVarDefs.forEach(svd -> fi.para.add(new classType(svd.typename, gScope)));
         gScope.addFunc(it.identifier, fi, it.pos);
     }
     public void visit(singleVarDefNode it) {}

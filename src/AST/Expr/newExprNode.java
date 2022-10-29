@@ -2,7 +2,6 @@ package AST.Expr;
 
 import AST.ASTVisitor;
 import Parser.MxParser;
-import Util.Type.varType;
 import Util.position;
 
 import java.util.ArrayList;
