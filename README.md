@@ -22,6 +22,9 @@
 
 ### 进度
 
-accept parameter: // check calling convention
+- [x] IR Node Design
+- [ ] IRBuilder
 
-- [ ] 
+## Notes
+
+accept parameter: // check calling convention

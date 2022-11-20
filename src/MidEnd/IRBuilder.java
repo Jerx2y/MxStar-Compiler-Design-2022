@@ -1,4 +1,4 @@
-package BackEnd;
+package MidEnd;
 
 import AST.ASTVisitor;
 import AST.*;
@@ -7,8 +7,11 @@ import AST.Expr.*;
 import AST.Stmt.*;
 
 public class IRBuilder implements ASTVisitor {
-    public void visit(RootNode it) { }
 
+
+    public void visit(RootNode it) {
+        ;
+    }
     public void visit(DefNode it) { }
     public void visit(classDefNode it) { }
     public void visit(funcDefNode it) { }
