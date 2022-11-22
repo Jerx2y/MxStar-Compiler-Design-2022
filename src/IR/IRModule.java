@@ -9,5 +9,10 @@ public class IRModule {
     public ArrayList<IRFunction> funcs;
     public ArrayList<IRClass> classes;
 
+    IRModule() {
+        gvars = new ArrayList<>();
+        funcs = new ArrayList<>();
+        classes = new ArrayList<>();
+    }
 
 }
