@@ -1,11 +1,19 @@
 package IR.Inst;
 
+import IR.Entity.Entity;
 import IR.IRVisitor;
 import IR.IRType.IRType;
 
 public class allocaInst extends Inst {
 
     public IRType type;
+
+    public Entity rd;
+
+    public allocaInst(Entity rd, IRType type) {
+        this.type = type;
+        this.rd = rd;
+    }
 
     @Override
     public void accept(IRVisitor visitor) {
@@ -14,6 +22,6 @@ public class allocaInst extends Inst {
 
     @Override
     public String toString() {
-        return null;
+        return rd.getValue() + " = alloca " + type;
     }
 }

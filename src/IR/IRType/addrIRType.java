@@ -1,9 +1,10 @@
 package IR.IRType;
 
-public class ptrIRType extends IRType {
+public class addrIRType extends IRType {
+
     IRType type;
 
-    public ptrIRType(IRType type) {
+    public addrIRType(IRType type) {
         this.type = type;
     }
 

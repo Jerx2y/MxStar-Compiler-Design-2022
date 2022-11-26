@@ -1,6 +1,7 @@
 package Util.Scope;
 
 // import MIR.register;
+import IR.Entity.Entity;
 import Util.Type.classType;
 import Util.Type.funcType;
 import Util.error.semanticError;
@@ -14,6 +15,8 @@ public class Scope {
     protected HashMap<String, classType> members;
     protected Scope parentScope;
     public boolean lookup = true;
+
+    protected HashMap<String, Entity> entities;
 
     public Scope(Scope parentScope) {
         members = new HashMap<>();
@@ -66,5 +69,9 @@ public class Scope {
         if (parentScope != null && lookup)
             return parentScope.getIdentifier(name);
         return new Pair<>(null, null);
+    }
+
+    public void addEntity(String name, Entity e) {
+        entities.put(name, e);
     }
 }
