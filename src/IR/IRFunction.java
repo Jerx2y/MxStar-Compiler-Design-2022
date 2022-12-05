@@ -1,12 +1,17 @@
 package IR;
 
 import IR.Entity.Entity;
+import IR.Entity.label;
+import IR.Entity.register;
 import IR.IRType.IRType;
+import IR.IRType.addrIRType;
+import IR.Inst.allocaInst;
+import Util.Type.funcType;
 
 import java.util.ArrayList;
 
 public class IRFunction {
-    int regNum;
+    int regID;
     public String identifier;
     public IRType retType;
     public Entity retEntity;
@@ -16,17 +21,21 @@ public class IRFunction {
     public ArrayList<IRBlock> blocks;
     public ArrayList<IRBlock> retBlocks;
 
-    IRFunction(int regNum, String identifier, IRType retType, ArrayList<Entity> paraEntity, IRBlock entry) {
-        this.regNum = regNum;
-        this.identifier = identifier;
-        this.paraEntity = paraEntity;
-        this.entry = entry;
-        this.retType = retType;
+    public IRFunction(String fIdentifier) {
+        regID = 0;
+        identifier = fIdentifier;
+        paraEntity = new ArrayList<>();
         blocks = new ArrayList<>();
         retBlocks = new ArrayList<>();
     }
 
+    public void buildEntry() {
+        entry = new IRBlock(new label(getRegId()), this);
+        retEntity = new register(new addrIRType(retType), getRegId());
+        entry.addInst(new allocaInst(retEntity, retType));
+    }
+
     public String getRegId() {
-        return Integer.toString(regNum++);
+        return Integer.toString(regID++);
     }
 }

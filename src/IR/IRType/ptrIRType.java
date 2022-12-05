@@ -1,7 +1,7 @@
 package IR.IRType;
 
 public class ptrIRType extends IRType {
-    IRType type;
+    public IRType type;
 
     public ptrIRType(IRType type) {
         this.type = type;

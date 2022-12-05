@@ -2,6 +2,7 @@ package Util.Scope;
 
 // import MIR.register;
 import IR.Entity.Entity;
+import IR.IRClass;
 import Util.Type.classType;
 import Util.Type.funcType;
 import Util.error.semanticError;
@@ -20,6 +21,7 @@ public class Scope {
 
     public Scope(Scope parentScope) {
         members = new HashMap<>();
+        entities = new HashMap<>();
         this.parentScope = parentScope;
     }
 
@@ -73,5 +75,9 @@ public class Scope {
 
     public void addEntity(String name, Entity e) {
         entities.put(name, e);
+    }
+
+    public Entity getEntity(String name) {
+        return entities.get(name);
     }
 }

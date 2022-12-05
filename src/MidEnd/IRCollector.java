@@ -1,23 +1,6 @@
 package MidEnd;
 
-import AST.ASTVisitor;
-import AST.*;
-import AST.Def.*;
-import AST.Expr.*;
-import AST.Stmt.*;
-import IR.Entity.*;
-import IR.IRBlock;
-import IR.IRClass;
-import IR.Inst.*;
-import IR.IRType.*;
-import IR.IRFunction;
-import Util.Scope.*;
-import Util.Type.*;
-import Util.error.codegenError;
-
-import java.util.HashMap;
-
-public class IRBuilder implements ASTVisitor {
+public class IRCollector implements ASTVisitor {
 
     globalScope gScope;
     Scope curScope;

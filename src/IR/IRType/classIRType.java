@@ -1,9 +1,11 @@
 package IR.IRType;
 
+import IR.IRClass;
+
 public class classIRType extends IRType {
     int bytes;
 
-    public classIRType() {
+    public classIRType(IRClass ic) {
         ;
     }
 

@@ -11,12 +11,13 @@ import java.util.ArrayList;
 public class IRBlock {
     Entity name;
     ArrayList<Inst> allocaList, instList;
-    Inst terminator = null;
+    Inst terminator;
     IRFunction inFunc;
 
     IRBlock(Entity name, IRFunction inFunc) {
         this.name = name;
         this.inFunc = inFunc;
+        this.terminator = null;
     }
 
     public void addInst(Inst i) {

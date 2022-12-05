@@ -6,7 +6,7 @@ import IR.IRType.labelIRType;
 public class label extends Entity {
     String name;
 
-    label(String name) {
+    public label(String name) {
         super(new labelIRType());
         this.name = name;
     }

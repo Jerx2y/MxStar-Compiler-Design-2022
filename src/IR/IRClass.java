@@ -6,10 +6,11 @@ import java.util.ArrayList;
 
 public class IRClass {
     String identifier;
-    ArrayList<IRType> vars;
-    ArrayList<IRFunction> funcs;
+    public ArrayList<IRType> vars;
+    public ArrayList<IRFunction> funcs;
 
-    public IRClass() {
+    public IRClass(String identifier) {
+        this.identifier = identifier;
         vars = new ArrayList<>();
         funcs = new ArrayList<>();
     }

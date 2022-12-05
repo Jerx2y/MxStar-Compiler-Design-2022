@@ -19,6 +19,6 @@ public class storeInst extends Inst {
 
     @Override
     public String toString() {
-        return "store " + rd + ", " + rs;
+        return "store " + rs + ", " + rd;
     }
 }
