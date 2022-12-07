@@ -3,15 +3,17 @@ package IR;
 import IR.IRType.IRType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class IRClass {
-    String identifier;
+    public String identifier;
+    public boolean constructor;
     public ArrayList<IRType> vars;
-    public ArrayList<IRFunction> funcs;
+    public HashMap<String, Integer> offsets;
 
     public IRClass(String identifier) {
         this.identifier = identifier;
         vars = new ArrayList<>();
-        funcs = new ArrayList<>();
+        constructor = false;
     }
 }

@@ -15,17 +15,19 @@ import Util.Scope.*;
 import Util.Type.*;
 import Util.error.codegenError;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class IRBuilder implements ASTVisitor {
 
     globalScope gScope;
-    Scope curScope;
     Module topModule;
-    IRClass curClass;
-    IRFunction curFunction;
-    IRBlock curBlock;
-    Entity retEntity;
+
+    Scope curScope = null;
+    IRClass curClass = null;
+    Entity curClassEntity = null;
+    IRFunction curFunction = null;
+    IRBlock curBlock = null;
 
     IRBuilder(globalScope gScope, Module topModule) {
         this.gScope = gScope;
@@ -43,7 +45,7 @@ public class IRBuilder implements ASTVisitor {
             case "int" -> new iIRType(32);
             case "bool" -> new iIRType(1);
             case "string" -> new ptrIRType(new iIRType(8));
-            default -> new ptrIRType(new classIRType(gScope.irclasses.get(type.classname)));
+            default -> new ptrIRType(new classIRType(gScope.getIRClasses(type.classname)));
         };
 
         for (int i = 0; i < type.dimension; ++i)
@@ -54,50 +56,39 @@ public class IRBuilder implements ASTVisitor {
 
 
     public void visit(RootNode it) {
-
-        for (classType c: gScope.getClasses().values()) {
-            if (c.classname.equals("int") || c.classname.equals("bool")
-                    || c.classname.equals("string")) continue;
-            IRClass ic = new IRClass(c.classname);
-            gScope.putIRClasses(c.classname, ic);
-        }
-
-        for (classType c: gScope.getClasses().values()) {
-            if (c.classname.equals("int") || c.classname.equals("bool")
-                    || c.classname.equals("string")) continue;
-            IRClass ic = gScope.getIRClasses(c.classname);
-            c.getVarsList().values().forEach(v -> ic.vars.add(getIRType(v)));
-        }
-
-        for (classType c: gScope.getClasses().values()) { // 只扫一遍会导致有些 classIRType 的 byte 不对
-            if (c.classname.equals("int") || c.classname.equals("bool")
-                    || c.classname.equals("string")) continue;
-            IRClass ic = gScope.getIRClasses(c.classname);
-            int i = 0;
-            for (classType v : c.getVarsList().values())
-                ic.vars.set(i++, getIRType(v));
-        }
-
         it.defs.forEach(x -> x.accept(this));
     }
 
     public void visit(DefNode it) { }
 
     public void visit(classDefNode it) {
-        curClass = new IRClass(it.identifier);
 
-        if (it.constructor != null)
+        curClass = new IRClass(it.identifier);
+        curScope = new classScope(gScope.getClassType(it.identifier), curScope);
+
+        for (varDefNode vd : it.varDecs)
+            for (singleVarDefNode svd : vd.singleVarDefs)
+                curClass.vars.add(getIRType(new classType(svd.typename, gScope)));
+
+
+        if (it.constructor != null) {
             it.constructor.accept(this);
+            curClass.constructor = true;
+        }
+
+        gScope.putIRClasses(it.identifier, curClass);
 
         it.funcDefs.forEach(fd -> fd.accept(this));
 
+        curScope = curScope.parentScope();
         curClass = null;
     }
 
     public void visit(funcDefNode it) {
         funcType fType = curScope.getFuncType(it.identifier);
         curScope = new funcScope(fType, curScope);
-        curFunction = new IRFunction(it.identifier);
+
+        curFunction = new IRFunction((curClass != null ? curClass.identifier + "." : "") + it.identifier);
 
         if (curClass != null)
             curFunction.paraEntity.add(new register(new ptrIRType(new classIRType(curClass)), curFunction.getRegId()));
@@ -134,11 +125,12 @@ public class IRBuilder implements ASTVisitor {
             curScope.addEntity(it.identifier, regPtr);
             if (it.initExpr != null) {
                 it.initExpr.accept(this);
-                if (retEntity.type instanceof addrIRType)
-                    retEntity = loadAddrType(retEntity);
-                if (retEntity.isNULL())
-                    retEntity.type = ((ptrIRType) regPtr.type).type;
-                curBlock.addInst(new storeInst(regPtr, retEntity));
+                Entity reg = it.initExpr.entity;
+                if (reg.type instanceof addrIRType)
+                    reg = loadAddrType(reg);
+                if (reg.isNULL())
+                    reg.type = ((ptrIRType) regPtr.type).type;
+                curBlock.addInst(new storeInst(regPtr, reg));
             }
         }
     }
@@ -153,11 +145,9 @@ public class IRBuilder implements ASTVisitor {
 
     public void visit(assignExprNode it) {
         it.lhs.accept(this);
-        Entity lhs = retEntity;
-
         it.rhs.accept(this);
-        Entity rhs = retEntity;
 
+        Entity lhs = it.lhs.entity, rhs = it.rhs.entity;
         if (!(lhs.type instanceof addrIRType))
             throw new codegenError("[assign expression] lhs is not an address", it.pos);
 
@@ -170,10 +160,10 @@ public class IRBuilder implements ASTVisitor {
     public void visit(binaryExprNode it) {
 
         it.lhs.accept(this);
-        Entity lhs = retEntity;
+        Entity lhs = it.lhs.entity;
 
         it.rhs.accept(this);
-        Entity rhs = retEntity;
+        Entity rhs = it.rhs.entity;
 
         if (lhs.type instanceof addrIRType)
             lhs = loadAddrType(lhs);
@@ -185,17 +175,18 @@ public class IRBuilder implements ASTVisitor {
             return ;
         }
 
-        retEntity = new register(lhs.type, curFunction.getRegId());
-        curBlock.addInst(new binaryInst(it.opCode, retEntity, lhs, rhs));
+        Entity reg = new register(lhs.type, curFunction.getRegId());
+        curBlock.addInst(new binaryInst(it.opCode, reg, lhs, rhs));
+        it.entity = reg;
     }
 
     public void visit(cmpExprNode it) {
 
         it.lhs.accept(this);
-        Entity lhs = retEntity;
+        Entity lhs = it.lhs.entity;
 
         it.rhs.accept(this);
-        Entity rhs = retEntity;
+        Entity rhs = it.rhs.entity;
 
         if (lhs.type instanceof addrIRType)
             lhs = loadAddrType(lhs);
@@ -207,16 +198,17 @@ public class IRBuilder implements ASTVisitor {
 
         }
 
-        retEntity = new register(new iIRType(1), curFunction.getRegId());
-        curBlock.addInst(new icmpInst(retEntity, it.opCode, lhs, rhs));
+        Entity reg = new register(new iIRType(1), curFunction.getRegId());
+        curBlock.addInst(new icmpInst(reg, it.opCode, lhs, rhs));
+        it.entity = reg;
     }
 
     public void visit(eqExprNode it) {
         it.lhs.accept(this);
-        Entity lhs = retEntity;
+        Entity lhs = it.lhs.entity;
 
         it.rhs.accept(this);
-        Entity rhs = retEntity;
+        Entity rhs = it.rhs.entity;
 
         if (lhs.type instanceof addrIRType)
             lhs = loadAddrType(lhs);
@@ -232,19 +224,65 @@ public class IRBuilder implements ASTVisitor {
             // TODO
         }
 
-        retEntity = new register(new iIRType(1), curFunction.getRegId());
-        curBlock.addInst(new icmpInst(retEntity, it.opt, lhs, rhs));
+        Entity reg = new register(new iIRType(1), curFunction.getRegId());
+        curBlock.addInst(new icmpInst(reg, it.opt, lhs, rhs));
+        it.entity = reg;
     }
 
     public void visit(funcExprNode it) {
-        ;
+        String name;
+        funcType fType;
+        ArrayList<Entity> para = new ArrayList<>();
+
+        if (it.caller instanceof varExprNode) {
+            fType = curScope.getFuncType(((varExprNode) it.caller).identifier);
+            if (curClass != null && fType != null) {
+                Entity classPtr = curClassEntity;
+                if (classPtr.type instanceof addrIRType)
+                    classPtr = loadAddrType(classPtr);
+                name = curClass.identifier + "." + ((varExprNode) it.caller).identifier;
+                para.add(classPtr);
+            } else {
+                fType = gScope.getFuncType(((varExprNode) it.caller).identifier);
+                name = ((varExprNode) it.caller).identifier;
+            }
+        } else if (it.caller instanceof memberExprNode) {
+            ((memberExprNode) it.caller).caller.accept(this);
+
+            Entity callerEntity = ((memberExprNode) it.caller).caller.entity;
+            if (callerEntity.type instanceof addrIRType)
+                callerEntity = loadAddrType(callerEntity);
+
+            assert callerEntity.type instanceof ptrIRType;
+            IRType cType = ((ptrIRType) callerEntity.type).type;
+            assert cType instanceof classIRType;
+
+            String className = ((classIRType) cType).getIdentifier();
+
+            fType = gScope.getClassType(className).getFunc(((memberExprNode) it.caller).member);
+
+            name = className + "." + ((memberExprNode) it.caller).member;
+            para.add(callerEntity);
+        } else throw new codegenError("[function expression]", it.pos);
+
+        Entity ret;
+        if (!fType.ret.isType("void")) {
+            ret = new register(getIRType(fType.ret), curFunction.getRegId());
+            curBlock.addInst(new callInst(ret, getIRType(fType.ret), name, para));
+        } else {
+            ret = null;
+            curBlock.addInst(new callInst(name, para));
+        }
+
+        it.entity = ret;
+
     }
 
     public void visit(lambdaExprNode it) { }
 
     public void visit(literalExprNode it) {
         assert (it.type instanceof classType);
-        retEntity = switch (((classType) it.type).classname) {
+        it.entity = switch (((classType) it.type).classname) {
             case "int" -> new constant(new iIRType(32), it.intVal);
             case "bool" -> new constant(new iIRType(1), it.boolVal);
             case "string" -> new constant(new ptrIRType(new iIRType(8)), it.stringVal);
@@ -252,41 +290,61 @@ public class IRBuilder implements ASTVisitor {
         };
     }
 
-    public void visit(memberExprNode it) { }
+    public void visit(memberExprNode it) {
+        // as func condition is considered in FuncExprNode, we can only consider var or class condition;
+        it.caller.accept(this);
 
-    public void visit(newExprNode it) { }
+        Entity classptr;
+        if (it.caller.entity.type instanceof addrIRType)
+            classptr = loadAddrType(it.caller.entity);
+        else classptr = it.caller.entity;
+
+        assert classptr.type instanceof ptrIRType;
+        assert ((ptrIRType) classptr.type).type instanceof classIRType;
+        classIRType cType = (classIRType) ((ptrIRType) classptr.type).type;
+
+        curBlock.addInst(getelementptrInst());
+
+        // maybe not hard
+        // gep is not ok.
+    }
+
+    public void visit(newExprNode it) {
+        //
+    }
 
     public void visit(unaryExprNode it) {
         it.expr.accept(this);
 
-        Entity ptr = retEntity, lhs;
+        Entity ptr = it.expr.entity, lhs;
         if (ptr.type instanceof addrIRType)
             lhs = loadAddrType(ptr);
         else lhs = ptr;
 
+        Entity ret;
         switch (it.opCode) {
             case NOT, TILDE -> {
                 if (!(lhs instanceof constant)) {
-                    retEntity = new register(lhs.type, curFunction.getRegId());
+                    ret = new register(lhs.type, curFunction.getRegId());
                     Entity rhs = it.opCode == unaryExprNode.unaryOpType.NOT ?
                             new constant(lhs.type, true) : new constant(lhs.type, -1);
-                    curBlock.addInst(new binaryInst(binaryExprNode.binaryOpType.XOR, retEntity, lhs, rhs));
-                } else retEntity = ((constant) lhs).getNot();
+                    curBlock.addInst(new binaryInst(binaryExprNode.binaryOpType.XOR, ret, lhs, rhs));
+                } else ret = ((constant) lhs).getNot();
             }
             case SUB -> {
                 if (!(lhs instanceof constant)) {
-                    retEntity = new register(lhs.type, curFunction.getRegId());
+                    ret = new register(lhs.type, curFunction.getRegId());
                     Entity rhs = new constant(lhs.type, 0);
-                    curBlock.addInst(new binaryInst(binaryExprNode.binaryOpType.SUB, retEntity, rhs, lhs));
-                } else retEntity = ((constant) lhs).getNeg();
+                    curBlock.addInst(new binaryInst(binaryExprNode.binaryOpType.SUB, ret, rhs, lhs));
+                } else ret = ((constant) lhs).getNeg();
             }
             case DOUBLE_ADD, DOUBLE_SUB -> {
                 Entity rhs = new constant(lhs.type, 1);
-                retEntity = new register(lhs.type, curFunction.getRegId());
+                ret = new register(lhs.type, curFunction.getRegId());
                 curBlock.addInst(new binaryInst(it.opCode == unaryExprNode.unaryOpType.DOUBLE_ADD ?
-                        binaryExprNode.binaryOpType.ADD : binaryExprNode.binaryOpType.SUB, retEntity, lhs, rhs));
+                        binaryExprNode.binaryOpType.ADD : binaryExprNode.binaryOpType.SUB, ret, lhs, rhs));
                 assert (ptr.type instanceof addrIRType);
-                curBlock.addInst(new storeInst(ptr, retEntity));
+                curBlock.addInst(new storeInst(ptr, ret));
             }
             case R_DOUBLE_ADD, R_DOUBLE_SUB -> {
                 Entity rhs = new constant(lhs.type, 1);
@@ -295,13 +353,18 @@ public class IRBuilder implements ASTVisitor {
                         binaryExprNode.binaryOpType.ADD : binaryExprNode.binaryOpType.SUB, res, lhs, rhs));
                 assert (ptr.type instanceof addrIRType);
                 curBlock.addInst(new storeInst(ptr, res));
-                retEntity = lhs;
+                ret = lhs;
+            }
+            default -> {
+                assert false;
+                ret = null;
             }
         }
+        it.entity = ret;
     }
 
     public void visit(varExprNode it) {
-        retEntity = curScope.getEntity(it.identifier);
+        it.entity = curScope.getEntity(it.identifier);
     }
 
 
