@@ -3,7 +3,7 @@ package IR.IRType;
 import IR.IRClass;
 
 public class classIRType extends IRType {
-    IRClass c;
+    public IRClass c;
     int bytes;
 
     public classIRType(IRClass c) {

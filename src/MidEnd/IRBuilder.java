@@ -141,7 +141,27 @@ public class IRBuilder implements ASTVisitor {
 
     public void visit(ExprNode it) { }
 
-    public void visit(arrayExprNode it) { }
+    public void visit(arrayExprNode it) {
+        it.caller.accept(this);
+        Entity caller = it.caller.entity;
+        if (caller.type instanceof addrIRType)
+            caller = loadAddrType(caller);
+
+        it.index.accept(this);
+        Entity index = it.index.entity;
+        if (index.type instanceof addrIRType)
+            index = loadAddrType(index);
+
+        assert caller.type instanceof ptrIRType;
+        IRType type = ((ptrIRType) caller.type).type;
+        Entity res = new register(new addrIRType(type), curFunction.getRegId());
+
+        getelementptrInst inst = new getelementptrInst(res, caller, type);
+        inst.idx.add(index);
+        curBlock.addInst(inst);
+
+        it.entity = res;
+    }
 
     public void visit(assignExprNode it) {
         it.lhs.accept(this);
@@ -291,7 +311,8 @@ public class IRBuilder implements ASTVisitor {
     }
 
     public void visit(memberExprNode it) {
-        // as func condition is considered in FuncExprNode, we can only consider var or class condition;
+        // as func condition is considered in FuncExprNode, only consider [var in class] condition;
+
         it.caller.accept(this);
 
         Entity classptr;
@@ -303,10 +324,18 @@ public class IRBuilder implements ASTVisitor {
         assert ((ptrIRType) classptr.type).type instanceof classIRType;
         classIRType cType = (classIRType) ((ptrIRType) classptr.type).type;
 
-        curBlock.addInst(getelementptrInst());
+        int offset = cType.c.offsets.get(it.member);
+        IRType type = cType.c.vars.get(offset);
 
-        // maybe not hard
-        // gep is not ok.
+        register res = new register(new addrIRType(type), curFunction.getRegId());
+
+        getelementptrInst inst = new getelementptrInst(res, classptr, cType);
+        inst.idx.add(new constant(new iIRType(32), 0));
+        inst.idx.add(new constant(new iIRType(32), offset));
+
+        curBlock.addInst(inst);
+
+        it.entity = res;
     }
 
     public void visit(newExprNode it) {
@@ -370,17 +399,29 @@ public class IRBuilder implements ASTVisitor {
 
     public void visit(StmtNode it) { }
 
-    public void visit(compoundStmtNode it) { }
+    public void visit(compoundStmtNode it) {
+        curScope = new Scope(curScope);
+        it.stmts.forEach(stmt -> stmt.accept(this));
+        curScope = curScope.parentScope();
+    }
 
-    public void visit(defStmtNode it) { }
+    public void visit(defStmtNode it) {
+        it.def.accept(this);
+    }
 
-    public void visit(exprStmtNode it) { }
+    public void visit(exprStmtNode it) {
+        it.expr.accept(this);
+    }
 
-    public void visit(flowStmtNode it) { }
+    public void visit(flowStmtNode it) {
+        ;
+    }
 
     public void visit(forStmtNode it) { }
 
-    public void visit(ifStmtNode it) { }
+    public void visit(ifStmtNode it) {
+
+    }
 
     public void visit(returnStmtNode it) { }
 

@@ -7,6 +7,7 @@ public interface IRVisitor {
     void visit(binaryInst it);
     void visit(brInst it);
     void visit(callInst it);
+    void visit(getelementptrInst it);
     void visit(globalInst it);
     void visit(icmpInst it);
     void visit(loadInst it);
