@@ -78,6 +78,8 @@ public class Scope {
     }
 
     public Entity getEntity(String name) {
-        return entities.get(name);
+        if (entities.containsKey(name))
+            return entities.get(name);
+        else return parentScope.getEntity(name);
     }
 }

@@ -12,8 +12,9 @@ public class IRClass {
     public HashMap<String, Integer> offsets;
 
     public IRClass(String identifier) {
-        this.identifier = identifier;
+        this.identifier = "class." + identifier;
         vars = new ArrayList<>();
         constructor = false;
+        offsets = new HashMap<>();
     }
 }

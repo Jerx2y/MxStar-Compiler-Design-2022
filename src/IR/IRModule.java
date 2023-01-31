@@ -5,13 +5,13 @@ import IR.Inst.Inst;
 import java.util.ArrayList;
 
 public class IRModule {
-    public ArrayList<Inst> gvars;
-    public ArrayList<IRFunction> funcs;
+    public ArrayList<Inst> globals;
+    public ArrayList<IRFunction> functions;
     public ArrayList<IRClass> classes;
 
-    IRModule() {
-        gvars = new ArrayList<>();
-        funcs = new ArrayList<>();
+    public IRModule() {
+        globals = new ArrayList<>();
+        functions = new ArrayList<>();
         classes = new ArrayList<>();
     }
 

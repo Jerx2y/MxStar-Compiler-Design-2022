@@ -2,6 +2,10 @@ import AST.RootNode;
 import FrontEnd.ASTBuilder;
 import FrontEnd.SemanticChecker;
 import FrontEnd.SymbolCollector;
+import IR.IRModule;
+import MidEnd.IRBuilder;
+import MidEnd.IRCollector;
+import MidEnd.IRPrinter;
 import Parser.MxLexer;
 import Parser.MxParser;
 import Util.MxErrorListener;
@@ -39,17 +43,13 @@ public class Compiler {
             new SymbolCollector(gScope).visit(ASTRoot);
             new SemanticChecker(gScope).visit(ASTRoot);
 
-//            mainFn f = new mainFn();
-//            new IRBuilder(f, gScope).visit(ASTRoot);
-//            // new IRPrinter(System.out).visitFn(f);
-//
-//            AsmFn asmF = new AsmFn();
-//            new InstSelector(asmF).visitFn(f);
-//            new RegAlloc(asmF).work();
-//            new AsmPrinter(asmF, System.out).print();
+            IRModule topModule = new IRModule();
+            new IRCollector(gScope, topModule).visit(ASTRoot);
+            new IRBuilder(gScope, topModule).visit(ASTRoot);
+            new IRPrinter("testcase/test.ll").visitIRModule(topModule);
 
         } catch (error er) {
-            System.err.println(er.toString());
+            System.err.println(er);
             throw new RuntimeException();
         }
 

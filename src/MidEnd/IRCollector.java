@@ -9,6 +9,7 @@ import IR.Entity.Entity;
 import IR.IRBlock;
 import IR.IRClass;
 import IR.IRFunction;
+import IR.IRModule;
 import IR.IRType.*;
 import Util.Scope.Scope;
 import Util.Scope.globalScope;
@@ -20,13 +21,13 @@ public class IRCollector implements ASTVisitor {
 
     globalScope gScope;
     Scope curScope;
-    Module topModule;
+    IRModule topModule;
     IRClass curClass;
     IRFunction curFunction;
     IRBlock curBlock;
     Entity retEntity;
 
-    IRCollector(globalScope gScope, Module topModule) {
+    public IRCollector(globalScope gScope, IRModule topModule) {
         this.gScope = gScope;
         this.topModule = topModule;
     }

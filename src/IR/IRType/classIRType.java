@@ -20,6 +20,6 @@ public class classIRType extends IRType {
     }
 
     public String toString() {
-        return "%class." + c.identifier;
+        return c.identifier;
     }
 }

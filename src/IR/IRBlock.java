@@ -1,6 +1,7 @@
 package IR;
 
 import IR.Entity.Entity;
+import IR.Entity.label;
 import IR.Inst.Inst;
 import IR.Inst.allocaInst;
 import IR.Inst.brInst;
@@ -9,23 +10,30 @@ import IR.Inst.retInst;
 import java.util.ArrayList;
 
 public class IRBlock {
-    Entity name;
-    ArrayList<Inst> allocaList, instList;
-    Inst terminator;
+    public Entity name;
+    public ArrayList<Inst> instList;
+    public Inst terminator;
     IRFunction inFunc;
+    public boolean br = false;
 
-    IRBlock(Entity name, IRFunction inFunc) {
-        this.name = name;
+    public IRBlock(IRFunction inFunc) {
+        this.name = new label(inFunc.getRegId());
         this.inFunc = inFunc;
         this.terminator = null;
+        instList = new ArrayList<>();
     }
 
-    public void addInst(Inst i) {
-        if (terminator != null) return ;
+    public boolean addInst(Inst i) {
+        if (terminator != null || br) return false;
         if (i instanceof brInst || i instanceof retInst)
             terminator = i;
-        else if (i instanceof allocaInst)
-            allocaList.add(i);
         else instList.add(i);
+        return true;
+    }
+
+    public void addTerminatorInst(Inst i) {
+        assert (br);
+        assert (terminator == null);
+        terminator = i;
     }
 }

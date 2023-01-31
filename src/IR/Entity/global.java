@@ -4,8 +4,9 @@ import IR.IRType.IRType;
 
 public class global extends Entity {
     String name;
-    public global(IRType type) {
+    public global(IRType type, String name) {
         super(type);
+        this.name = name;
     }
 
     @Override

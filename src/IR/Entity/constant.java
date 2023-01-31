@@ -1,19 +1,30 @@
 package IR.Entity;
 
-import IR.IRType.IRType;
-import IR.IRType.iIRType;
-import IR.IRVisitor;
-import Util.error.codegenError;
+import IR.IRType.*;
 
 public class constant extends Entity {
     public enum constantType {
-        BOOL, INT, STRING, NULL
+        BOOL, INT, STRING, NULL, VOID
     }
 
     constantType cType;
     boolean i1;
     int i32;
     String str;
+
+    public constant(IRType type) {
+        super(type);
+        if (type instanceof addrIRType || type instanceof arrayIRType || type instanceof classIRType || type instanceof ptrIRType)
+            cType = constantType.NULL;
+        else if (type instanceof iIRType) {
+            if (((iIRType) type).getBits() == 1)
+                cType = constantType.BOOL;
+            else
+                cType = constantType.INT;
+        } else if (type instanceof voidIRType)
+            cType = constantType.VOID;
+        i1 = false; i32 = 0; str = "";
+    }
 
     public constant(IRType type, boolean i1) {
         super(type);
@@ -45,6 +56,7 @@ public class constant extends Entity {
             case INT -> Integer.toString(i32);
             case STRING -> "c\"" + str + "\\00\"";
             case NULL -> "null";
+            case VOID -> "";
         };
     }
 

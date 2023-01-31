@@ -18,11 +18,19 @@ public class getelementptrInst extends Inst {
         this.idx = new ArrayList<>();
     }
 
-    getelementptrInst(Entity rd, Entity rs, IRType type, ArrayList<Entity> idx) {
+    public getelementptrInst(Entity rd, Entity rs, IRType type, ArrayList<Entity> idx) {
         this.rd = rd;
         this.rs = rs;
         this.type = type;
         this.idx = idx;
+    }
+
+    public getelementptrInst(Entity rd, Entity rs, IRType type, Entity var1) {
+        this.rd = rd;
+        this.rs = rs;
+        this.type = type;
+        this.idx = new ArrayList<>();
+        this.idx.add(var1);
     }
 
     @Override

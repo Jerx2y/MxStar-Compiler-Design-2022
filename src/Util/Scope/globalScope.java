@@ -1,6 +1,7 @@
 package Util.Scope;
 
 import IR.IRClass;
+import IR.IRFunction;
 import Util.Type.classType;
 import Util.Type.funcType;
 import Util.error.semanticError;

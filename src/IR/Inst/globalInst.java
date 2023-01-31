@@ -12,7 +12,7 @@ public class globalInst extends Inst {
     Entity rd, init;
     defineType dType;
 
-    globalInst(Entity rd, Entity init, defineType dType) {
+    public globalInst(Entity rd, Entity init, defineType dType) {
         this.rd = rd;
         this.init = init;
         this.dType = dType;

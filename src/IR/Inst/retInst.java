@@ -7,7 +7,7 @@ public class retInst extends Inst {
 
     Entity ret;
 
-    retInst(Entity ret) {
+    public retInst(Entity ret) {
         this.ret = ret;
     }
 
