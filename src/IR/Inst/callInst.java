@@ -9,9 +9,9 @@ import java.util.ArrayList;
 
 public class callInst extends Inst {
 
-    Entity rd;
+    public Entity rd;
     IRType retType;
-    String name;
+    public String name;
     public ArrayList<Entity> para;
 
     public callInst(Entity rd, IRType retType, String name, ArrayList<Entity> para) {

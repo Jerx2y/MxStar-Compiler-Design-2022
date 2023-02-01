@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 public class bitcastInst extends Inst {
 
-    Entity rd, rs;
+    public Entity rd, rs;
     IRType targetType;
 
     public bitcastInst(Entity rd, Entity rs) {

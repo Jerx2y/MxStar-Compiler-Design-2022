@@ -5,7 +5,8 @@ import IR.IRType.IRType;
 import IR.IRVisitor;
 
 public class loadInst extends Inst {
-    Entity rd, rs;
+    public Entity rd;
+    public Entity rs;
 
     public loadInst(Entity rd, Entity rs) {
         this.rd = rd;

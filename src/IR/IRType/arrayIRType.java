@@ -2,7 +2,7 @@ package IR.IRType;
 
 public class arrayIRType extends IRType {
     int size;
-    IRType type;
+    public IRType type;
 
     public arrayIRType(int size, IRType type) {
         this.size = size;

@@ -9,8 +9,8 @@ public class constant extends Entity {
 
     constantType cType;
     boolean i1;
-    int i32;
-    String str;
+    public int i32;
+    public String str;
 
     public constant(IRType type) {
         super(type);
@@ -58,6 +58,16 @@ public class constant extends Entity {
             case NULL -> "null";
             case VOID -> "";
         };
+    }
+
+    public int getInt() {
+        if (cType == constantType.BOOL)
+            return i1 ? 1 : 0;
+        else return i32;
+    }
+
+    public boolean isBool() {
+        return cType == constantType.BOOL;
     }
 
     public String toString() {

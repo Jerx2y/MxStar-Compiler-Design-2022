@@ -6,13 +6,13 @@ import IR.Entity.Entity;
 import IR.IRVisitor;
 
 public class icmpInst extends Inst {
-    enum icmpOpType {
+    public enum icmpOpType {
         EQ, NE,
         SGT, SGE, SLT, SLE
     }
 
-    Entity rd, rs1, rs2;
-    icmpOpType opt;
+    public Entity rd, rs1, rs2;
+    public icmpOpType opt;
 
     public icmpInst(Entity rd, cmpExprNode.cmpOpType opt, Entity rs1, Entity rs2) {
         this.opt = switch (opt) {

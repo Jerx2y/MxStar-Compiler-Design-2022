@@ -9,6 +9,7 @@ public class IRClass {
     public String identifier;
     public boolean constructor;
     public ArrayList<IRType> vars;
+    public ArrayList<Integer> pos;
     public HashMap<String, Integer> offsets;
 
     public IRClass(String identifier) {

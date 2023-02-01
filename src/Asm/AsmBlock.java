@@ -4,7 +4,7 @@ import Asm.Ins.Ins;
 
 public class AsmBlock {
     Ins head, tail;
-    String label;
+    public String label;
 
     public AsmBlock(String label) {
         this.label = label;

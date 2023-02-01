@@ -2,14 +2,16 @@ package Asm.Ins;
 
 import Asm.Operand.Operand;
 
+import java.util.Spliterator;
+
 public class loadInsSet extends Ins {
 
     String type;
     Operand rd, rs, imm;
-    // null
+    String symbol;
 
-    public loadInsSet(Operand rd, Operand rs, Operand imm, int Bytes) {
-        type = switch (Bytes) {
+    public loadInsSet(Operand rd, Operand rs, Operand imm, int bytes) {
+        type = switch (bytes) {
             case 1 -> "lb";
             case 2 -> "lh";
             default -> "lw";
@@ -17,6 +19,19 @@ public class loadInsSet extends Ins {
         this.rd = rd;
         this.rs = rs;
         this.imm = imm;
+        symbol = null;
+    }
+
+    public loadInsSet(Operand rd, String symbol, int bytes) {
+        type = switch (bytes) {
+            case 1 -> "lb";
+            case 2 -> "lh";
+            default -> "lw";
+        };
+        this.rd = rd;
+        this.symbol = symbol;
+        this.rs = null;
+        this.imm = null;
     }
 
     @Override

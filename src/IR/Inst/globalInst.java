@@ -9,8 +9,8 @@ public class globalInst extends Inst {
         GLOBAL, CONSTANT
     }
 
-    Entity rd, init;
-    defineType dType;
+    public Entity rd, init;
+    public defineType dType;
 
     public globalInst(Entity rd, Entity init, defineType dType) {
         this.rd = rd;

@@ -80,8 +80,6 @@ public class IRPrinter implements IRVisitor {
 
     @Override public void visit(loadInst it) { }
 
-    @Override public void visit(phiInst it) { }
-
     @Override public void visit(retInst it) { }
 
     @Override public void visit(storeInst it) { }

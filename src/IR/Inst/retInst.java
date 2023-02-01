@@ -5,7 +5,7 @@ import IR.IRVisitor;
 
 public class retInst extends Inst {
 
-    Entity ret;
+    public Entity ret;
 
     public retInst(Entity ret) {
         this.ret = ret;

@@ -8,7 +8,17 @@ public class AsmModule {
     public pReg zero, ra, sp, gp, tp;
     public ArrayList<pReg> t, s, a;
 
+    public ArrayList<AsmData> data;
+
+    public ArrayList<AsmFunction> functions;
+
     AsmModule() {
+        t = new ArrayList<>();
+        s = new ArrayList<>();
+        a = new ArrayList<>();
+        data = new ArrayList<>();
+        functions = new ArrayList<>();
+
         zero = new pReg("zero");
         ra = new pReg("ra");
         sp = new pReg("sp");
@@ -20,5 +30,6 @@ public class AsmModule {
             s.add(new pReg("s" + i));
         for (int i = 0; i <= 7; ++i)
             a.add(new pReg("a" + i));
+
     }
 }

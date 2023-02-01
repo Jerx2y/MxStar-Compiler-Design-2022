@@ -532,6 +532,7 @@ public class IRBuilder implements ASTVisitor {
         classType cType = new classType(it.ctx, gScope);
         IRType iType = getIRType(cType);
 
+        // class
         if (it.dimExpr.size() == 0) {
             IRClass iClass = gScope.getIRClasses(cType.classname);
             Entity tmp = new register(new addrIRType(new iIRType(8)), curFunction.getRegId());
@@ -550,6 +551,7 @@ public class IRBuilder implements ASTVisitor {
             return ;
         }
 
+        // array
         int dim = 0;
         for (int i = 0; i < it.dimExpr.size(); ++i)
             if (it.dimExpr.get(i) != null) dim = i + 1;

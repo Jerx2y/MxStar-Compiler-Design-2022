@@ -18,7 +18,6 @@ public interface IRVisitor {
     void visit(globalInst it);
     void visit(icmpInst it);
     void visit(loadInst it);
-    void visit(phiInst it);
     void visit(retInst it);
     void visit(storeInst it);
 }
