@@ -60,8 +60,6 @@ public class IRPrinter implements IRVisitor {
         os.println("    " + irblock.terminator);
     }
 
-    @Override public void visitInst(Inst inst) { }
-
     @Override public void visit(allocaInst it) { }
 
     @Override public void visit(binaryInst it) { }

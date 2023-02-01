@@ -4,10 +4,9 @@ import IR.Inst.*;
 
 public interface IRVisitor {
     void visitIRModule(IRModule irmodule);
-    void visitIRFunction(IRFunction irfunction);
     void visitIRClass(IRClass irclass);
+    void visitIRFunction(IRFunction irfunction);
     void visitIRBlock(IRBlock irblock);
-    void visitInst(Inst inst);
 
     void visit(allocaInst it);
     void visit(binaryInst it);

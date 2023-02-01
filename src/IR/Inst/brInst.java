@@ -9,10 +9,10 @@ import IR.IRVisitor;
 
 public class brInst extends Inst {
 
-    Entity cond, d1, d2;
+    public Entity cond, d1, d2;
 
     public brInst(Entity d1) {
-        cond = new constant(new iIRType(1), true);
+        cond = null;
         this.d1 = d1;
         d2 = null;
     }
