@@ -1,5 +1,6 @@
 package Asm.Ins;
 
+import Asm.AsmVisitor;
 import Asm.Operand.Operand;
 
 public class brInsSet extends Ins {
@@ -15,11 +16,11 @@ public class brInsSet extends Ins {
 
     @Override
     public String toString() {
-        return null;
+        return "\t" + type + "\t" + condition + ", " + label;
     }
 
     @Override
-    public void accept() {
-
+    public void accept(AsmVisitor visitor) {
+        visitor.visit(this);
     }
 }

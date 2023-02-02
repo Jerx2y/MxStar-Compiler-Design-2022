@@ -1,11 +1,13 @@
 package Asm.Ins;
 
+import Asm.AsmVisitor;
 import Asm.Operand.Operand;
 
 public class binaryInsSet extends Ins {
 
     String type;
-    Operand rd, rs1, rs2;
+    public Operand rd;
+    public Operand rs1, rs2;
     boolean isIType;
 
     public binaryInsSet(String type, Operand rd, Operand rs1, Operand rs2) {
@@ -18,11 +20,11 @@ public class binaryInsSet extends Ins {
 
     @Override
     public String toString() {
-        return null;
+        return "\t" + type + "\t" + rd + ", " + rs1 + ", " + rs2;
     }
 
     @Override
-    public void accept() {
-
+    public void accept(AsmVisitor visitor) {
+        visitor.visit(this);
     }
 }

@@ -3,7 +3,7 @@ package Asm;
 import Asm.Ins.Ins;
 
 public class AsmBlock {
-    Ins head, tail;
+    public Ins head, tail;
     public String label;
 
     public AsmBlock(String label) {
@@ -11,7 +11,7 @@ public class AsmBlock {
         head = new Ins();
         tail = new Ins();
         head.next = tail;
-        tail.next = head;
+        tail.prev = head;
     }
 
     public void insertBefore(Ins x, Ins p) {
@@ -34,5 +34,9 @@ public class AsmBlock {
 
     public void addFront(Ins x) {
         insertAfter(x, head);
+    }
+
+    public void accept(AsmVisitor visitor) {
+        visitor.visit(this);
     }
 }

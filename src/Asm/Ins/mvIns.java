@@ -1,9 +1,10 @@
 package Asm.Ins;
 
+import Asm.AsmVisitor;
 import Asm.Operand.Operand;
 
 public class mvIns extends Ins {
-    Operand rd, rs;
+    public Operand rd, rs;
 
     public mvIns(Operand rd, Operand rs) {
         this.rd = rd;
@@ -12,11 +13,11 @@ public class mvIns extends Ins {
 
     @Override
     public String toString() {
-        return null;
+        return "\tmv\t" + rd + ", " + rs;
     }
 
     @Override
-    public void accept() {
-
+    public void accept(AsmVisitor visitor) {
+        visitor.visit(this);
     }
 }

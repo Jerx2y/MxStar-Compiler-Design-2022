@@ -12,7 +12,7 @@ public class AsmModule {
 
     public ArrayList<AsmFunction> functions;
 
-    AsmModule() {
+    public AsmModule() {
         t = new ArrayList<>();
         s = new ArrayList<>();
         a = new ArrayList<>();
@@ -31,5 +31,9 @@ public class AsmModule {
         for (int i = 0; i <= 7; ++i)
             a.add(new pReg("a" + i));
 
+    }
+
+    public void accept(AsmVisitor visitor) {
+        visitor.visit(this);
     }
 }

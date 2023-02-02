@@ -1,5 +1,7 @@
 package Asm.Ins;
 
+import Asm.AsmVisitor;
+
 public class callIns extends Ins {
 
     String name;
@@ -10,11 +12,11 @@ public class callIns extends Ins {
 
     @Override
     public String toString() {
-        return null;
+        return "\tcall\t" + name;
     }
 
     @Override
-    public void accept() {
-
+    public void accept(AsmVisitor visitor) {
+        visitor.visit(this);
     }
 }

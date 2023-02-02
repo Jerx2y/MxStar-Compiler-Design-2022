@@ -1,5 +1,6 @@
 package Asm.Ins;
 
+import Asm.AsmVisitor;
 import Asm.Operand.Operand;
 
 import java.util.Spliterator;
@@ -7,7 +8,7 @@ import java.util.Spliterator;
 public class loadInsSet extends Ins {
 
     String type;
-    Operand rd, rs, imm;
+    public Operand rd, rs, imm;
     String symbol;
 
     public loadInsSet(Operand rd, Operand rs, Operand imm, int bytes) {
@@ -36,11 +37,14 @@ public class loadInsSet extends Ins {
 
     @Override
     public String toString() {
-        return null;
+        String str = "\t" + type + "\t" + rd + ", ";
+        if (rs == null) str += symbol;
+        else str += imm + "(" + rs + ")";
+        return str;
     }
 
     @Override
-    public void accept() {
-
+    public void accept(AsmVisitor visitor) {
+        visitor.visit(this);
     }
 }

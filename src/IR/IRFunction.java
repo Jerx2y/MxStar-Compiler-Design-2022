@@ -58,4 +58,8 @@ public class IRFunction {
     public String getRegId() {
         return Integer.toString(regID++);
     }
+
+    public void accept(IRVisitor visitor) {
+        visitor.visit(this);
+    }
 }

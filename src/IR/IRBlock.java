@@ -36,4 +36,8 @@ public class IRBlock {
         assert (terminator == null);
         terminator = i;
     }
+
+    public void accept(IRVisitor visitor) {
+        visitor.visit(this);
+    }
 }

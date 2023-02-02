@@ -15,4 +15,7 @@ public class IRModule {
         classes = new ArrayList<>();
     }
 
+    public void accept(IRVisitor visitor) {
+        visitor.visit(this);
+    }
 }

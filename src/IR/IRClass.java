@@ -18,4 +18,8 @@ public class IRClass {
         constructor = false;
         offsets = new HashMap<>();
     }
+
+    public void accept(IRVisitor visitor) {
+        visitor.visit(this);
+    }
 }

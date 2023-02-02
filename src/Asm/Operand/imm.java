@@ -6,4 +6,9 @@ public class imm extends Operand {
     public imm(int val) {
         this.val = val;
     }
+
+    @Override
+    public String toString() {
+        return Integer.toString(val);
+    }
 }

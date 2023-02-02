@@ -7,4 +7,9 @@ public class reg extends Operand {
     public reg(String name) {
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        return null;
+    }
 }

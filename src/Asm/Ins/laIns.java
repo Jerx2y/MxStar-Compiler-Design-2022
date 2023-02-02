@@ -1,10 +1,11 @@
 package Asm.Ins;
 
+import Asm.AsmVisitor;
 import Asm.Operand.Operand;
 
 public class laIns extends Ins {
 
-    Operand rd;
+    public Operand rd;
     String name;
 
     public laIns(Operand rd, String name) {
@@ -14,11 +15,11 @@ public class laIns extends Ins {
 
     @Override
     public String toString() {
-        return null;
+        return "\tla\t" + rd + ", " + name;
     }
 
     @Override
-    public void accept() {
-
+    public void accept(AsmVisitor visitor) {
+        visitor.visit(this);
     }
 }

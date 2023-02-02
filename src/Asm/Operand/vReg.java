@@ -7,4 +7,9 @@ public class vReg extends reg {
         super(name);
         this.size = size;
     }
+
+    @Override
+    public String toString() {
+        return "%" + name;
+    }
 }

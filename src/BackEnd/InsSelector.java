@@ -44,14 +44,14 @@ public class InsSelector implements IRVisitor {
     }
 
     @Override
-    public void visitIRModule(IRModule irmodule) {
+    public void visit(IRModule irmodule) {
         irmodule.globals.forEach(inst -> inst.accept(this));
-        irmodule.classes.forEach(this::visitIRClass);
-        irmodule.functions.forEach(this::visitIRFunction);
+        irmodule.classes.forEach(c -> c.accept(this));
+        irmodule.functions.forEach(f -> f.accept(this));
     }
 
     @Override
-    public void visitIRClass(IRClass irclass) {
+    public void visit(IRClass irclass) {
         int sum = 0;
         for (IRType type : irclass.vars) {
             irclass.pos.add(sum);
@@ -60,8 +60,8 @@ public class InsSelector implements IRVisitor {
     }
 
     @Override
-    public void visitIRFunction(IRFunction irfunction) {
-        curFunction = new AsmFunction(topModule.functions.size(), irfunction.identifier);
+    public void visit(IRFunction irfunction) {
+        curFunction = new AsmFunction(topModule, irfunction.identifier);
 
         curBlock = curFunction.entry = new AsmBlock(curFunction.getBlockId());
 
@@ -79,8 +79,6 @@ public class InsSelector implements IRVisitor {
             regMap.put(para, rg);
         }
 
-        curFunction.blocks.add(curBlock);
-
         blockMap = new HashMap<>();
         irfunction.blocks.forEach(b -> {
             curBlock = new AsmBlock(curFunction.getBlockId());
@@ -88,15 +86,16 @@ public class InsSelector implements IRVisitor {
             curFunction.blocks.add(curBlock);
         });
 
+        // System.err.println(curFunction.name + "#");
         curFunction.entry.addBack(new jIns(curFunction.blocks.get(0).label));
 
-        irfunction.blocks.forEach(this::visitIRBlock);
+        irfunction.blocks.forEach(b -> b.accept(this));
 
         topModule.functions.add(curFunction);
     }
 
     @Override
-    public void visitIRBlock(IRBlock irblock) {
+    public void visit(IRBlock irblock) {
         curBlock = blockMap.get(irblock.name);
         irblock.instList.forEach(inst -> inst.accept(this));
         irblock.terminator.accept(this);
@@ -162,10 +161,13 @@ public class InsSelector implements IRVisitor {
     public void visit(callInst it) {
         for (int i = 0; i < Integer.min(8, it.para.size()); ++i)
             curBlock.addBack(new mvIns(topModule.a.get(i), getReg(it.para.get(i))));
+        int size = 0;
         for (int i = 8; i < it.para.size(); ++i) {
             Entity val = it.para.get(i);
+            size += val.type.getBytes();
             curBlock.addBack(new storeInsSet(getReg(val), sp, new imm((i - 8) * 4), val.type.getBytes()));
         }
+        curFunction.callSize = Integer.max(curFunction.callSize, size);
 
         curBlock.addBack(new callIns(it.name));
 

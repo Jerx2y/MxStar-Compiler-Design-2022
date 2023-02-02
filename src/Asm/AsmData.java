@@ -32,4 +32,8 @@ public class AsmData {
         res += "\n";
         return res;
     }
+
+    public void accept(AsmVisitor visitor) {
+        visitor.visit(this);
+    }
 }

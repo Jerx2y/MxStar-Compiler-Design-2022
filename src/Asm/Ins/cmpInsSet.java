@@ -1,11 +1,12 @@
 package Asm.Ins;
 
+import Asm.AsmVisitor;
 import Asm.Operand.Operand;
 
 public class cmpInsSet extends Ins {
 
     String type;
-    Operand rd, rs;
+    public Operand rd, rs;
 
     public cmpInsSet(String type, Operand rd, Operand rs) {
         this.type = type;
@@ -15,11 +16,11 @@ public class cmpInsSet extends Ins {
 
     @Override
     public String toString() {
-        return null;
+        return "\t" + type + "\t" + rd + ", " + rs;
     }
 
     @Override
-    public void accept() {
-
+    public void accept(AsmVisitor visitor) {
+        visitor.visit(this);
     }
 }

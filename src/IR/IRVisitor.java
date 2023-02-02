@@ -3,10 +3,10 @@ package IR;
 import IR.Inst.*;
 
 public interface IRVisitor {
-    void visitIRModule(IRModule irmodule);
-    void visitIRClass(IRClass irclass);
-    void visitIRFunction(IRFunction irfunction);
-    void visitIRBlock(IRBlock irblock);
+    void visit(IRModule irmodule);
+    void visit(IRClass irclass);
+    void visit(IRFunction irfunction);
+    void visit(IRBlock irblock);
 
     void visit(allocaInst it);
     void visit(binaryInst it);

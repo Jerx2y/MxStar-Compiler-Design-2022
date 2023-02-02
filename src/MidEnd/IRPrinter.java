@@ -3,31 +3,29 @@ package MidEnd;
 import IR.*;
 import IR.Inst.*;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.PrintStream;
 
 public class IRPrinter implements IRVisitor {
 
     PrintStream os;
 
-    public IRPrinter(String filename) throws FileNotFoundException {
-        os = new PrintStream(new FileOutputStream(filename));
+    public IRPrinter(PrintStream os) {
+        this.os = os;
     }
 
     @Override
-    public void visitIRModule(IRModule irmodule) {
+    public void visit(IRModule irmodule) {
         irmodule.globals.forEach(i -> os.println(i));
         os.println();
-        irmodule.classes.forEach(this::visitIRClass);
+        irmodule.classes.forEach(c -> c.accept(this));
         irmodule.functions.forEach(f -> {
             os.println();
-            visitIRFunction(f);
+            f.accept(this);
         });
     }
 
     @Override
-    public void visitIRClass(IRClass irclass) {
+    public void visit(IRClass irclass) {
         os.print("%" + irclass.identifier + " = type { ");
         for (int i = 0; i < irclass.vars.size(); ++i) {
             if (i > 0) os.print(", ");
@@ -37,7 +35,7 @@ public class IRPrinter implements IRVisitor {
     }
 
     @Override
-    public void visitIRFunction(IRFunction irfunction) {
+    public void visit(IRFunction irfunction) {
         os.print("define " + irfunction.retType + " @" + irfunction.identifier + "(");
         for (int i = 0; i < irfunction.paraEntity.size(); ++i) {
             if (i > 0) os.print(", ");
@@ -47,7 +45,7 @@ public class IRPrinter implements IRVisitor {
         for (int i = 0; i < irfunction.blocks.size(); i++) {
             IRBlock b = irfunction.blocks.get(i);
             if (i > 0) os.println(b.name.getValue() + ":");
-            visitIRBlock(b);
+            b.accept(this);
             if (i != irfunction.blocks.size() - 1)
                 os.println();
         }
@@ -55,7 +53,7 @@ public class IRPrinter implements IRVisitor {
     }
 
     @Override
-    public void visitIRBlock(IRBlock irblock) {
+    public void visit(IRBlock irblock) {
         irblock.instList.forEach(i -> os.println("    " + i));
         os.println("    " + irblock.terminator);
     }

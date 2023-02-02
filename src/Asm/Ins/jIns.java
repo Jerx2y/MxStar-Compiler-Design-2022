@@ -1,5 +1,7 @@
 package Asm.Ins;
 
+import Asm.AsmVisitor;
+
 public class jIns extends Ins {
 
     String label;
@@ -10,11 +12,11 @@ public class jIns extends Ins {
 
     @Override
     public String toString() {
-        return null;
+        return "\tj\t" + label;
     }
 
     @Override
-    public void accept() {
-
+    public void accept(AsmVisitor visitor) {
+        visitor.visit(this);
     }
 }

@@ -1,4 +1,9 @@
 import AST.RootNode;
+import Asm.AsmModule;
+import BackEnd.AsmPrinter;
+import BackEnd.BuiltinPrinter;
+import BackEnd.InsSelector;
+import BackEnd.RegAlloca;
 import FrontEnd.ASTBuilder;
 import FrontEnd.SemanticChecker;
 import FrontEnd.SymbolCollector;
@@ -15,15 +20,16 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.*;
 
 public class Compiler {
     public static void main(String[] args) throws Exception {
 
-        String name = "testcase/test.mx";
-        InputStream input = new FileInputStream(name);
+        InputStream input = new FileInputStream("testcase/test.mx");
         // InputStream input = System.in;
+
+        PrintStream IROutput = new PrintStream(new FileOutputStream("testcase/test.ll"));
+        PrintStream AsmOutput = new PrintStream(new FileOutputStream("testcase/test.s"));
 
         try {
             RootNode ASTRoot;
@@ -43,10 +49,16 @@ public class Compiler {
             new SymbolCollector(gScope).visit(ASTRoot);
             new SemanticChecker(gScope).visit(ASTRoot);
 
-            IRModule topModule = new IRModule();
-            new IRCollector(gScope, topModule).visit(ASTRoot);
-            new IRBuilder(gScope, topModule).visit(ASTRoot);
-            new IRPrinter("testcase/test.ll").visitIRModule(topModule);
+            IRModule irModule = new IRModule();
+            new IRCollector(gScope, irModule).visit(ASTRoot);
+            new IRBuilder(gScope, irModule).visit(ASTRoot);
+            new IRPrinter(IROutput).visit(irModule);
+
+            AsmModule asmModule = new AsmModule();
+            new InsSelector(asmModule).visit(irModule);
+            new RegAlloca().visit(asmModule);
+            new BuiltinPrinter(AsmOutput).visit();
+            new AsmPrinter(AsmOutput).visit(asmModule);
 
         } catch (error er) {
             System.err.println(er);
