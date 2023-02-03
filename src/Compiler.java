@@ -30,7 +30,7 @@ public class Compiler {
         PrintStream BuiltinOutput;
         PrintStream AsmOutput;
 
-        boolean online = false;
+        boolean online = true;
 
         if (!online) {
             input = new FileInputStream("testcase/test.mx");
