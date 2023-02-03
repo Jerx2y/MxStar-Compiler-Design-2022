@@ -160,15 +160,16 @@ public class IRBuilder implements ASTVisitor {
 
     public void visit(classDefNode it) {
 
-        curClass = new IRClass(it.identifier);
+        curClass = gScope.getIRClasses(it.identifier);
         curScope = new classScope(gScope.getClassType(it.identifier), curScope);
 
         topModule.classes.add(curClass);
 
+        curClass.vars = new ArrayList<>();
         for (varDefNode vd : it.varDecs)
             for (singleVarDefNode svd : vd.singleVarDefs) {
                 curClass.vars.add(getIRType(new classType(svd.typename, gScope)));
-                curScope.addEntity(svd.identifier, new label("function_var"));
+                curScope.addEntity(svd.identifier, new label("__class_var"));
             }
 
 
@@ -435,9 +436,9 @@ public class IRBuilder implements ASTVisitor {
 
             if (cType instanceof classIRType) { // class
 
-                String className = ((classIRType) cType).getIdentifier();
+                String className = ((classIRType) cType).getOriginIdentifier();
 
-                name = className + "." + name;
+                name = "class." + className + "." + name;
 
                 fType = gScope.getClassType(className).getFunc(((memberExprNode) it.caller).member);
 
@@ -525,6 +526,8 @@ public class IRBuilder implements ASTVisitor {
         assert(classptr.type instanceof ptrIRType);
         assert(((ptrIRType) classptr.type).type instanceof classIRType);
         classIRType cType = (classIRType) ((ptrIRType) classptr.type).type;
+
+        System.err.println(cType.c.identifier);
 
         int offset = cType.c.offsets.get(it.member);
         IRType type = cType.c.vars.get(offset);

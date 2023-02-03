@@ -65,8 +65,6 @@ public class IRCollector implements ASTVisitor {
     @Override
     public void visit(classDefNode it) {
         curClass = new IRClass(it.identifier);
-        it.varDecs.forEach(vd -> vd.accept(this));
-
 
         for (varDefNode varDec : it.varDecs) {
             for (int i = 0; i < varDec.singleVarDefs.size(); i++) {
@@ -75,7 +73,6 @@ public class IRCollector implements ASTVisitor {
             }
         }
 
-        it.funcDefs.forEach(fd -> fd.accept(this));
         gScope.putIRClasses(it.identifier, curClass);
         curClass = null;
     }

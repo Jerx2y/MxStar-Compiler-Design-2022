@@ -17,6 +17,7 @@ public class IRClass {
         vars = new ArrayList<>();
         constructor = false;
         offsets = new HashMap<>();
+        pos = new ArrayList<>();
     }
 
     public void accept(IRVisitor visitor) {

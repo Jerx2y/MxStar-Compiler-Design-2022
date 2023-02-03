@@ -15,8 +15,8 @@ public class classIRType extends IRType {
         return bytes;
     }
 
-    public String getIdentifier() {
-        return c.identifier;
+    public String getOriginIdentifier() {
+        return c.identifier.substring(6);
     }
 
     public String toString() {
