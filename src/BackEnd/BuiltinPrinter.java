@@ -155,22 +155,22 @@ getInt:                                 # @getInt
 toString:                               # @toString
 	.cfi_startproc
 # %bb.0:
-	addi	sp, sp, -32
-	.cfi_def_cfa_offset 32
-	sw	ra, 28(sp)
+	addi	sp, sp, -16
+	.cfi_def_cfa_offset 16
+	sw	ra, 12(sp)
 	.cfi_offset ra, -4
-	sw	a0, 24(sp)
+	sw	a0, 8(sp)
 	addi	a0, zero, 15
 	mv	a1, zero
 	call	malloc
-	lw	a2, 12(sp)
-	sw	a0, 16(sp)
+	lw	a2, 8(sp)
+	sw	a0, 0(sp)
 	lui	a1, %hi(.L.str.2)
 	addi	a1, a1, %lo(.L.str.2)
 	call	sprintf
-	lw	a0, 16(sp)
-	lw	ra, 28(sp)
-	addi	sp, sp, 32
+	lw	a0, 0(sp)
+	lw	ra, 12(sp)
+	addi	sp, sp, 16
 	ret
 .Lfunc_end6:
 	.size	toString, .Lfunc_end6-toString

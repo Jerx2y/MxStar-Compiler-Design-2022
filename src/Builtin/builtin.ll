@@ -74,15 +74,14 @@ define dso_local i32 @getInt() #0 {
 define dso_local i8* @toString(i32 %0) #0 {
   %2 = alloca i32, align 4
   %3 = alloca i8*, align 8
-  %4 = alloca i32, align 4
   store i32 %0, i32* %2, align 4
-  %5 = call noalias i8* @malloc(i64 15) #5
-  store i8* %5, i8** %3, align 8
-  %6 = load i8*, i8** %3, align 8
-  %7 = load i32, i32* %4, align 4
-  %8 = call i32 (i8*, i8*, ...) @sprintf(i8* %6, i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.2, i64 0, i64 0), i32 %7) #5
-  %9 = load i8*, i8** %3, align 8
-  ret i8* %9
+  %4 = call noalias i8* @malloc(i64 15) #5
+  store i8* %4, i8** %3, align 8
+  %5 = load i8*, i8** %3, align 8
+  %6 = load i32, i32* %2, align 4
+  %7 = call i32 (i8*, i8*, ...) @sprintf(i8* %5, i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.2, i64 0, i64 0), i32 %6) #5
+  %8 = load i8*, i8** %3, align 8
+  ret i8* %8
 }
 
 ; Function Attrs: nounwind

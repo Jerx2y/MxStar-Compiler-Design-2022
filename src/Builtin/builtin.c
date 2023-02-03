@@ -35,9 +35,8 @@ int getInt(){
     return ret;
 }
 
-char *toString(int i){
-    char * ret = (char *) malloc(INT_BUF_SIZE);
-    int n;
+char *toString(int n){
+    char *ret = (char *) malloc(INT_BUF_SIZE);
     sprintf(ret, "%d", n);
     return ret;
 }

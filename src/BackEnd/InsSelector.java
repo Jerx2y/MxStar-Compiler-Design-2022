@@ -237,11 +237,11 @@ public class InsSelector implements IRVisitor {
             case SGT -> curBlock.addBack(new binaryInsSet("slt", res, getReg(it.rs2), getReg(it.rs1)));
             case SLE -> {
                 curBlock.addBack(new binaryInsSet("slt", res, getReg(it.rs2), getReg(it.rs1)));
-                curBlock.addBack(new binaryInsSet("xor", res, res, new imm(1)));
+                curBlock.addBack(new binaryInsSet("xori", res, res, new imm(1)));
             }
             case SGE -> {
                 curBlock.addBack(new binaryInsSet("slt", res, getReg(it.rs1), getReg(it.rs2)));
-                curBlock.addBack(new binaryInsSet("xor", res, res, new imm(1)));
+                curBlock.addBack(new binaryInsSet("xori", res, res, new imm(1)));
             }
         }
         regMap.put(it.rd, res);

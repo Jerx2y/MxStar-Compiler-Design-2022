@@ -30,9 +30,9 @@ public class Compiler {
         PrintStream BuiltinOutput;
         PrintStream AsmOutput;
 
-        boolean localtest = false;
+        boolean online = false;
 
-        if (localtest) {
+        if (!online) {
             input = new FileInputStream("testcase/test.mx");
             IROutput = new PrintStream(new FileOutputStream("testcase/test.ll"));
             BuiltinOutput = new PrintStream(new FileOutputStream("testcase/builtin.s"));
