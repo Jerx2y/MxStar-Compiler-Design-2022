@@ -48,6 +48,11 @@ public class globalScope extends Scope {
     }
 
     @Override
+    public funcType getClassFuncType(String name) {
+        return null;
+    }
+
+    @Override
     public classType getClassType(String name) {
         return classes.get(name);
     }

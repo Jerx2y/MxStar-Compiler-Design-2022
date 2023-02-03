@@ -37,15 +37,19 @@ public class Scope {
         members.put(name, t);
     }
 
-    public classType getVarType(String name) {
-        if (members.containsKey(name)) return members.get(name);
-        else if (parentScope != null && lookup)
-            return parentScope.getVarType(name);
-        return null;
-    }
+    // public classType getVarType(String name) {
+    //     if (members.containsKey(name)) return members.get(name);
+    //     else if (parentScope != null && lookup)
+    //         return parentScope.getVarType(name);
+    //     return null;
+    // }
 
     public funcType getFuncType(String name) {
         return parentScope.getFuncType(name);
+    }
+
+    public funcType getClassFuncType(String name) { // find functions in class.
+        return parentScope.getClassFuncType(name);
     }
 
     public classType getClassType(String name) {

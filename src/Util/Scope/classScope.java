@@ -43,6 +43,11 @@ public class classScope extends Scope {
     }
 
     @Override
+    public funcType getClassFuncType(String name) {
+        return functions.get(name);
+    }
+
+    @Override
     public Pair<classType, funcType> getIdentifier(String name) {
         classType vtype = members.get(name);
         funcType ftype = functions.get(name);

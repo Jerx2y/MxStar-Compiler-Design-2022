@@ -33,7 +33,7 @@ public class Compiler {
         boolean online = true;
 
         if (!online) {
-            input = new FileInputStream("testcase/t60.mx");
+            input = new FileInputStream("testcase/t61.mx");
             // IROutput = new PrintStream(new FileOutputStream("testcase/test.ll"));
             BuiltinOutput = new PrintStream(new FileOutputStream("testcase/builtin.s"));
             AsmOutput = new PrintStream(new FileOutputStream("testcase/test.s"));
@@ -41,7 +41,7 @@ public class Compiler {
             input = System.in;
             // IROutput = new PrintStream(new FileOutputStream("test.ll"));
             BuiltinOutput = new PrintStream(new FileOutputStream("builtin.s"));
-            AsmOutput = new PrintStream(new FileOutputStream("test.s"));
+            AsmOutput = new PrintStream(new FileOutputStream("output.s"));
         }
 
         try {

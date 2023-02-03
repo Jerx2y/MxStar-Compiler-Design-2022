@@ -25,7 +25,6 @@ public class IRBuilder implements ASTVisitor {
 
     Scope curScope = null;
     IRClass curClass = null;
-    Entity curClassEntity = null;
     IRFunction curFunction = null;
     IRBlock curBlock = null;
 
@@ -411,9 +410,9 @@ public class IRBuilder implements ASTVisitor {
         ArrayList<Entity> para = new ArrayList<>();
 
         if (it.caller instanceof varExprNode) {
-            fType = curScope.getFuncType(((varExprNode) it.caller).identifier);
+            fType = curScope.getClassFuncType(((varExprNode) it.caller).identifier);
             if (curClass != null && fType != null) {
-                Entity classPtr = curClassEntity;
+                Entity classPtr = curFunction.paraEntity.get(0);
                 if (classPtr.type instanceof addrIRType)
                     classPtr = loadAddrType(classPtr);
                 name = curClass.identifier + "." + ((varExprNode) it.caller).identifier;
@@ -526,8 +525,6 @@ public class IRBuilder implements ASTVisitor {
         assert(classptr.type instanceof ptrIRType);
         assert(((ptrIRType) classptr.type).type instanceof classIRType);
         classIRType cType = (classIRType) ((ptrIRType) classptr.type).type;
-
-        System.err.println(cType.c.identifier);
 
         int offset = cType.c.offsets.get(it.member);
         IRType type = cType.c.vars.get(offset);
