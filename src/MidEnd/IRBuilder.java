@@ -110,9 +110,10 @@ public class IRBuilder implements ASTVisitor {
 
     IRType getIRType(classType type) {
         IRType res = switch (type.classname) {
-            case "int" -> new iIRType(32);
-            case "bool" -> new iIRType(1);
+            case "int" -> i32Type;
+            case "bool" -> i1Type;
             case "string" -> new ptrIRType(new iIRType(8));
+            case "void" -> voidType;
             default -> new ptrIRType(new classIRType(gScope.getIRClasses(type.classname)));
         };
 

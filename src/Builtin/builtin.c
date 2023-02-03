@@ -1,3 +1,6 @@
+// clang -S -emit-llvm builtin.c -o builtin.ll -O0
+// llc builtin.ll -o builtin.s -march=riscv32 -mattr=+m
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
