@@ -73,26 +73,26 @@ public class IRBuilder implements ASTVisitor {
         topModule.globals.add(new declareInst(getInt));
         topModule.globals.add(new declareInst(toString));
 
-        IRFunction array_size = new IRFunction("array_size", 1, i32Type, new register(strType, "0"));
+        IRFunction array_size = new IRFunction("__array_size", 1, i32Type, new register(strType, "0"));
         topModule.globals.add(new declareInst(array_size));
 
-        IRFunction string_length = new IRFunction("string_length", 1, i32Type, new register(strType, "0"));
-        IRFunction string_substring = new IRFunction("string_substring", 3, strType,
+        IRFunction string_length = new IRFunction("__string_length", 1, i32Type, new register(strType, "0"));
+        IRFunction string_substring = new IRFunction("__string_substring", 3, strType,
                 new register(strType, "0"), new register(i32Type, "1"), new register(i32Type, "2"));
-        IRFunction string_parseInt = new IRFunction("string_parseInt", 1, i32Type, new register(strType, "0"));
-        IRFunction string_ord = new IRFunction("string_ord", 2, i32Type, new register(strType, "0"), new register(i32Type, "1'"));
+        IRFunction string_parseInt = new IRFunction("__string_parseInt", 1, i32Type, new register(strType, "0"));
+        IRFunction string_ord = new IRFunction("__string_ord", 2, i32Type, new register(strType, "0"), new register(i32Type, "1'"));
         topModule.globals.add(new declareInst(string_length));
         topModule.globals.add(new declareInst(string_substring));
         topModule.globals.add(new declareInst(string_parseInt));
         topModule.globals.add(new declareInst(string_ord));
 
-        IRFunction string_add = new IRFunction("string_add", 2, strType, new register(strType, "0"), new register(strType, "1"));
-        IRFunction string_eq = new IRFunction("string_eq", 2, i1Type, new register(strType, "0"), new register(strType, "1"));
-        IRFunction string_ne = new IRFunction("string_ne", 2, i1Type, new register(strType, "0"), new register(strType, "1"));
-        IRFunction string_lt = new IRFunction("string_lt", 2, i1Type, new register(strType, "0"), new register(strType, "1"));
-        IRFunction string_le = new IRFunction("string_le", 2, i1Type, new register(strType, "0"), new register(strType, "1"));
-        IRFunction string_gt = new IRFunction("string_gt", 2, i1Type, new register(strType, "0"), new register(strType, "1"));
-        IRFunction string_ge = new IRFunction("string_ge", 2, i1Type, new register(strType, "0"), new register(strType, "1"));
+        IRFunction string_add = new IRFunction("__string_add", 2, strType, new register(strType, "0"), new register(strType, "1"));
+        IRFunction string_eq = new IRFunction("__string_eq", 2, i1Type, new register(strType, "0"), new register(strType, "1"));
+        IRFunction string_ne = new IRFunction("__string_ne", 2, i1Type, new register(strType, "0"), new register(strType, "1"));
+        IRFunction string_lt = new IRFunction("__string_lt", 2, i1Type, new register(strType, "0"), new register(strType, "1"));
+        IRFunction string_le = new IRFunction("__string_le", 2, i1Type, new register(strType, "0"), new register(strType, "1"));
+        IRFunction string_gt = new IRFunction("__string_gt", 2, i1Type, new register(strType, "0"), new register(strType, "1"));
+        IRFunction string_ge = new IRFunction("__string_ge", 2, i1Type, new register(strType, "0"), new register(strType, "1"));
         topModule.globals.add(new declareInst(string_add));
         topModule.globals.add(new declareInst(string_eq));
         topModule.globals.add(new declareInst(string_ne));
@@ -320,6 +320,8 @@ public class IRBuilder implements ASTVisitor {
 
     public void visit(binaryExprNode it) {
 
+        // TODO: Short way get value
+
         it.lhs.accept(this);
         Entity lhs = it.lhs.entity;
 
@@ -331,13 +333,14 @@ public class IRBuilder implements ASTVisitor {
         if (rhs.type instanceof addrIRType)
             rhs = loadAddrType(rhs);
 
-        if (lhs.isStr() && rhs.isStr()) {
-            // TODO
-            return ;
-        }
-
         Entity reg = new register(lhs.type, curFunction.getRegId());
-        curBlock.addInst(new binaryInst(it.opCode, reg, lhs, rhs));
+
+        if (lhs.isStr() && rhs.isStr()) {
+            ArrayList<Entity> para = new ArrayList<>();
+            para.add(lhs); para.add(rhs);
+            curBlock.addInst(new callInst(reg, reg.type, "__string_add", para));
+        } else curBlock.addInst(new binaryInst(it.opCode, reg, lhs, rhs));
+
         it.entity = reg;
     }
 
@@ -354,13 +357,21 @@ public class IRBuilder implements ASTVisitor {
         if (rhs.type instanceof addrIRType)
             rhs = loadAddrType(rhs);
 
-        if (lhs.isStr() && rhs.isStr()) {
-            // TODO
-
-        }
-
         Entity reg = new register(new iIRType(1), curFunction.getRegId());
-        curBlock.addInst(new icmpInst(reg, it.opCode, lhs, rhs));
+
+        if (lhs.isStr() && rhs.isStr()) {
+            String type = switch (it.opCode) {
+                case LE -> "__string_lt";
+                case GR -> "__string_gt";
+                case LEQ -> "__string_le";
+                case GEQ -> "__string_ge";
+            };
+            ArrayList<Entity> para = new ArrayList<>();
+            para.add(lhs);
+            para.add(rhs);
+            curBlock.addInst(new callInst(reg, reg.type, type, para));
+        } else curBlock.addInst(new icmpInst(reg, it.opCode, lhs, rhs));
+
         it.entity = reg;
     }
 
@@ -381,12 +392,14 @@ public class IRBuilder implements ASTVisitor {
         if (rhs.isNULL())
             rhs.type = lhs.type;
 
-        if (lhs.isStr() && rhs.isStr()) {
-            // TODO
-        }
-
         Entity reg = new register(new iIRType(1), curFunction.getRegId());
-        curBlock.addInst(new icmpInst(reg, it.opt, lhs, rhs));
+
+        if (lhs.isStr() && rhs.isStr()) {
+            ArrayList<Entity> para = new ArrayList<>();
+            para.add(lhs); para.add(rhs);
+            curBlock.addInst(new callInst(reg, reg.type, "__string_eq", para));
+        } else curBlock.addInst(new icmpInst(reg, it.opt, lhs, rhs));
+
         it.entity = reg;
     }
 
@@ -431,13 +444,13 @@ public class IRBuilder implements ASTVisitor {
 
             } else if (cType instanceof iIRType && ((iIRType) cType).getBits() == 8) { // string
 
-                name = "string_" + name;
+                name = "__string_" + name;
                 fType = gScope.getClassType("string").getFunc(((memberExprNode) it.caller).member);
                 para.add(callerEntity);
 
             } else  { // array
 
-                name = "array_size";
+                name = "__array_size";
                 fType = new funcType();
                 fType.ret = new classType("int");
                 para.add(callerEntity);

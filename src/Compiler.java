@@ -25,11 +25,24 @@ import java.io.*;
 public class Compiler {
     public static void main(String[] args) throws Exception {
 
-        InputStream input = new FileInputStream("testcase/test.mx");
-        // InputStream input = System.in;
+        InputStream input;
+        PrintStream IROutput;
+        PrintStream BuiltinOutput;
+        PrintStream AsmOutput;
 
-        PrintStream IROutput = new PrintStream(new FileOutputStream("testcase/test.ll"));
-        PrintStream AsmOutput = new PrintStream(new FileOutputStream("testcase/test.s"));
+        boolean localtest = false;
+
+        if (localtest) {
+            input = new FileInputStream("testcase/test.mx");
+            IROutput = new PrintStream(new FileOutputStream("testcase/test.ll"));
+            BuiltinOutput = new PrintStream(new FileOutputStream("testcase/builtin.s"));
+            AsmOutput = new PrintStream(new FileOutputStream("testcase/test.s"));
+        } else {
+            input = System.in;
+            IROutput = new PrintStream(new FileOutputStream("test.ll"));
+            BuiltinOutput = new PrintStream(new FileOutputStream("builtin.s"));
+            AsmOutput = new PrintStream(new FileOutputStream("test.s"));
+        }
 
         try {
             RootNode ASTRoot;
@@ -57,7 +70,7 @@ public class Compiler {
             AsmModule asmModule = new AsmModule();
             new InsSelector(asmModule).visit(irModule);
             new RegAlloca().visit(asmModule);
-            new BuiltinPrinter(AsmOutput).visit();
+            new BuiltinPrinter(BuiltinOutput).visit();
             new AsmPrinter(AsmOutput).visit(asmModule);
 
         } catch (error er) {

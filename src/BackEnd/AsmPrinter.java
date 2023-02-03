@@ -21,7 +21,8 @@ public class AsmPrinter implements AsmVisitor {
 
     @Override
     public void visit(AsmModule it) {
-        os.println("\t.text\n");
+        os.println("\t.text");
+        os.println("\t.file\t\"test.ll\"\n");
 
         topModule = it;
         sp = topModule.sp;
@@ -38,6 +39,7 @@ public class AsmPrinter implements AsmVisitor {
     public void visit(AsmFunction it) {
         os.println("\t.globl\t" + it.name);
         os.println("\t.p2align\t2");
+        os.println("\t.type\t" + it.name + ",@function");
         os.println(it.name + ":");
 
         int stkSize = it.offset + it.callSize;
