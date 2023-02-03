@@ -558,7 +558,7 @@ public class IRBuilder implements ASTVisitor {
             assert iType instanceof ptrIRType;
             iType = ((ptrIRType) iType).type;
             // System.err.println(iType.getBytes());
-            parameter.add(new constant(new iIRType(32), iClass.bytes));
+            parameter.add(new constant(new iIRType(32), iClass.bytes + 8));
             curBlock.addInst(new callInst(tmp, tmp.type, "malloc", parameter));
             it.entity = new register(new ptrIRType(new classIRType(iClass)), curFunction.getRegId());
             curBlock.addInst(new bitcastInst(it.entity, tmp));
