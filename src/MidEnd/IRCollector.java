@@ -66,10 +66,15 @@ public class IRCollector implements ASTVisitor {
     public void visit(classDefNode it) {
         curClass = new IRClass(it.identifier);
 
+        int j = 0;
         for (varDefNode varDec : it.varDecs) {
             for (int i = 0; i < varDec.singleVarDefs.size(); i++) {
-                curClass.vars.add(getIRType(new classType(varDec.singleVarDefs.get(i).typename, gScope)));
-                curClass.offsets.put(varDec.singleVarDefs.get(i).identifier, i);
+                IRType type = getIRType(new classType(varDec.singleVarDefs.get(i).typename, gScope));
+                curClass.vars.add(type);
+                curClass.offsets.put(varDec.singleVarDefs.get(i).identifier, j++);
+                if (type instanceof iIRType)
+                    curClass.bytes += type.getBytes();
+                else  curClass.bytes += 8;
             }
         }
 

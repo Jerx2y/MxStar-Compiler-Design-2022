@@ -42,8 +42,12 @@ public class AsmPrinter implements AsmVisitor {
         os.println(it.name + ":");
 
         int stkSize = it.offset + it.callSize;
+
+        System.err.println(it.offset + " @ " +  it.callSize);
+
         if (stkSize % 16 != 0)
             stkSize = (stkSize / 16 + 1) * 16;
+
         AsmBlock exit = it.getExit();
         Ins terminal = exit.tail.prev;
 

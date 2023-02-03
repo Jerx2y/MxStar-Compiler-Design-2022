@@ -106,7 +106,8 @@ public class RegAlloca implements AsmVisitor {
 
     @Override
     public void visit(loadInsSet it) {
-        it.rs = getPhyReg(it, it.rs, t0, false);
+        if (it.rs != null)
+            it.rs = getPhyReg(it, it.rs, t0, false);
         it.rd = getPhyReg(it, it.rd, t1, true);
     }
 
@@ -121,8 +122,9 @@ public class RegAlloca implements AsmVisitor {
 
     @Override
     public void visit(storeInsSet it) {
-        it.val = getPhyReg(it, it.val, t0, false);
-        it.addr = getPhyReg(it, it.addr, t1, false);
-        it.rt = getPhyReg(it, it.rt, t2, false);
+        if (it.rt == null)
+            it.addr = getPhyReg(it, it.addr, t0, false);
+        else it.rt = getPhyReg(it, it.rt, t1, false);
+        it.val = getPhyReg(it, it.val, t2, false);
     }
 }

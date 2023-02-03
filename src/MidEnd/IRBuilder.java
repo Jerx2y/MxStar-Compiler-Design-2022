@@ -527,6 +527,9 @@ public class IRBuilder implements ASTVisitor {
         classIRType cType = (classIRType) ((ptrIRType) classptr.type).type;
 
         int offset = cType.c.offsets.get(it.member);
+
+        // System.err.println(it.member + " " + offset);
+
         IRType type = cType.c.vars.get(offset);
 
         register res = new register(new addrIRType(type), curFunction.getRegId());
@@ -552,9 +555,12 @@ public class IRBuilder implements ASTVisitor {
             Entity tmp = new register(new addrIRType(new iIRType(8)), curFunction.getRegId());
 
             ArrayList<Entity> parameter = new ArrayList<>();
-            parameter.add(new constant(new iIRType(32), iType.getBytes()));
+            assert iType instanceof ptrIRType;
+            iType = ((ptrIRType) iType).type;
+            // System.err.println(iType.getBytes());
+            parameter.add(new constant(new iIRType(32), iClass.bytes));
             curBlock.addInst(new callInst(tmp, tmp.type, "malloc", parameter));
-            it.entity = new register(new addrIRType(new classIRType(iClass)), curFunction.getRegId());
+            it.entity = new register(new ptrIRType(new classIRType(iClass)), curFunction.getRegId());
             curBlock.addInst(new bitcastInst(it.entity, tmp));
 
             if (iClass.constructor) {

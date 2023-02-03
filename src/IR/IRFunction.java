@@ -5,6 +5,7 @@ import IR.Entity.label;
 import IR.Entity.register;
 import IR.IRType.IRType;
 import IR.IRType.addrIRType;
+import IR.IRType.voidIRType;
 import IR.Inst.allocaInst;
 import IR.Inst.callInst;
 import Util.Type.funcType;
@@ -47,8 +48,10 @@ public class IRFunction {
         entry = new IRBlock(this);
         if (isMainFn)
             entry.addInst(new callInst("__cxx_global_var_init", new ArrayList<>()));
-        retEntity = new register(new addrIRType(retType), getRegId());
-        entry.addInst(new allocaInst(retEntity, retType));
+        if (!(retType instanceof voidIRType)) {
+            retEntity = new register(new addrIRType(retType), getRegId());
+            entry.addInst(new allocaInst(retEntity, retType));
+        }
     }
 
     public IRBlock getLastBlock() {

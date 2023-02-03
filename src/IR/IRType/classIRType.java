@@ -8,6 +8,7 @@ public class classIRType extends IRType {
 
     public classIRType(IRClass c) {
         this.c = c;
+        c.vars.forEach(v -> bytes += v.getBytes());
     }
 
     @Override
@@ -20,6 +21,6 @@ public class classIRType extends IRType {
     }
 
     public String toString() {
-        return c.identifier;
+        return "%" + c.identifier;
     }
 }

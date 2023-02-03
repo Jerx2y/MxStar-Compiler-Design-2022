@@ -11,6 +11,7 @@ public class IRClass {
     public ArrayList<IRType> vars;
     public ArrayList<Integer> pos;
     public HashMap<String, Integer> offsets;
+    public int bytes = 0;
 
     public IRClass(String identifier) {
         this.identifier = "class." + identifier;
