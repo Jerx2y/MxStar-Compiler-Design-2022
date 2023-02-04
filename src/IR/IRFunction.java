@@ -49,7 +49,7 @@ public class IRFunction {
         if (isMainFn)
             entry.addInst(new callInst("__cxx_global_var_init", new ArrayList<>()));
         if (!(retType instanceof voidIRType)) {
-            retEntity = new register(new addrIRType(retType), getRegId()); // ADDR check
+            retEntity = new register(new addrIRType(retType), getRegId()); // ADDR checked
             entry.addInst(new allocaInst(retEntity, retType));
         }
     }

@@ -205,7 +205,7 @@ public class IRBuilder implements ASTVisitor {
 
         for (int i = 0; i < fType.para.size(); ++i) {
             Entity val = new register(getIRType(fType.para.get(i)), curFunction.getRegId());
-            Entity ptr = new register(new addrIRType(val.type), curFunction.getRegId());
+            Entity ptr = new register(new addrIRType(val.type), curFunction.getRegId()); // ADDR checked
             curFunction.paraEntity.add(val);
             curBlock.addInst(new allocaInst(ptr, val.type));
             curBlock.addInst(new storeInst(ptr, val));
@@ -245,14 +245,14 @@ public class IRBuilder implements ASTVisitor {
         Entity regPtr;
 
         if (curScope instanceof globalScope) {
-            regPtr = new global(new addrIRType(type), it.identifier);
+            regPtr = new global(new addrIRType(type), it.identifier); // checked
             topModule.globals.add(new globalInst(regPtr, new constant(type), globalInst.defineType.GLOBAL));
             if (it.initExpr != null) {
                 curFunction = globalVarInit;
                 curBlock = globalVarInit.entry;
             }
         } else {
-            regPtr = new register(new addrIRType(type), curFunction.getRegId());
+            regPtr = new register(new addrIRType(type), curFunction.getRegId()); // checked
             curBlock.addInst(new allocaInst(regPtr, type));
         }
 
@@ -293,7 +293,7 @@ public class IRBuilder implements ASTVisitor {
 
         assert caller.type instanceof ptrIRType;
         IRType type = ((ptrIRType) caller.type).type;
-        Entity res = new register(new addrIRType(type), curFunction.getRegId());
+        Entity res = new register(new addrIRType(type), curFunction.getRegId()); // checked
 
         getelementptrInst inst = new getelementptrInst(res, caller, type);
         inst.idx.add(index);
@@ -321,7 +321,103 @@ public class IRBuilder implements ASTVisitor {
 
     public void visit(binaryExprNode it) {
 
-        // TODO: Short way get value
+        if (it.opCode == binaryExprNode.binaryOpType.DOUBLE_AND) {
+
+            IRBlock thenBlock = new IRBlock(curFunction);
+            IRBlock trueBlock = new IRBlock(curFunction);
+            IRBlock falseBlock = new IRBlock(curFunction);
+            IRBlock endBlock = new IRBlock(curFunction);
+
+            Entity res = new register(new addrIRType(i1Type), curFunction.getRegId());
+            curBlock.addInst(new allocaInst(res, i1Type));
+
+            it.lhs.accept(this);
+            Entity lhs = it.lhs.entity;
+            if (lhs.type instanceof addrIRType)
+                lhs = loadAddrType(lhs);
+
+            curBlock.addInst(new brInst(lhs, thenBlock.name, falseBlock.name));
+            curBlock.br = true;
+            curFunction.blocks.add(curBlock);
+
+            curBlock = thenBlock;
+
+            it.rhs.accept(this);
+            Entity rhs = it.rhs.entity;
+            if (rhs.type instanceof addrIRType)
+                rhs = loadAddrType(rhs);
+
+            curBlock.addInst(new brInst(rhs, trueBlock.name, falseBlock.name));
+            curBlock.br = true;
+            curFunction.blocks.add(curBlock);
+
+            curBlock = trueBlock;
+            curBlock.addInst(new storeInst(res, new constant(i1Type, true)));
+            curBlock.addInst(new brInst(endBlock.name));
+            curBlock.br = true;
+            curFunction.blocks.add(curBlock);
+
+            curBlock = falseBlock;
+            curBlock.addInst(new storeInst(res, new constant(i1Type, false)));
+            curBlock.addInst(new brInst(endBlock.name));
+            curBlock.br = true;
+            curFunction.blocks.add(curBlock);
+
+            curBlock = endBlock;
+
+            it.entity = res;
+
+            return ;
+        }
+
+        if (it.opCode == binaryExprNode.binaryOpType.DOUBLE_OR) {
+
+            IRBlock thenBlock = new IRBlock(curFunction);
+            IRBlock trueBlock = new IRBlock(curFunction);
+            IRBlock falseBlock = new IRBlock(curFunction);
+            IRBlock endBlock = new IRBlock(curFunction);
+
+            Entity res = new register(new addrIRType(i1Type), curFunction.getRegId());
+            curBlock.addInst(new allocaInst(res, i1Type));
+
+            it.lhs.accept(this);
+            Entity lhs = it.lhs.entity;
+            if (lhs.type instanceof addrIRType)
+                lhs = loadAddrType(lhs);
+
+            curBlock.addInst(new brInst(lhs, trueBlock.name, thenBlock.name));
+            curBlock.br = true;
+            curFunction.blocks.add(curBlock);
+
+            curBlock = thenBlock;
+
+            it.rhs.accept(this);
+            Entity rhs = it.rhs.entity;
+            if (rhs.type instanceof addrIRType)
+                rhs = loadAddrType(rhs);
+
+            curBlock.addInst(new brInst(rhs, trueBlock.name, falseBlock.name));
+            curBlock.br = true;
+            curFunction.blocks.add(curBlock);
+
+            curBlock = trueBlock;
+            curBlock.addInst(new storeInst(res, new constant(i1Type, true)));
+            curBlock.addInst(new brInst(endBlock.name));
+            curBlock.br = true;
+            curFunction.blocks.add(curBlock);
+
+            curBlock = falseBlock;
+            curBlock.addInst(new storeInst(res, new constant(i1Type, false)));
+            curBlock.addInst(new brInst(endBlock.name));
+            curBlock.br = true;
+            curFunction.blocks.add(curBlock);
+
+            curBlock = endBlock;
+
+            it.entity = res;
+
+            return ;
+        }
 
         it.lhs.accept(this);
         Entity lhs = it.lhs.entity;
@@ -528,11 +624,9 @@ public class IRBuilder implements ASTVisitor {
 
         int offset = cType.c.offsets.get(it.member);
 
-        // System.err.println(it.member + " " + offset);
-
         IRType type = cType.c.vars.get(offset);
 
-        register res = new register(new addrIRType(type), curFunction.getRegId());
+        register res = new register(new addrIRType(type), curFunction.getRegId()); // question
 
         getelementptrInst inst = new getelementptrInst(res, classptr, cType);
         inst.idx.add(new constant(new iIRType(32), 0));
@@ -552,12 +646,11 @@ public class IRBuilder implements ASTVisitor {
         // class
         if (it.dimExpr.size() == 0) {
             IRClass iClass = gScope.getIRClasses(cType.classname);
-            Entity tmp = new register(new addrIRType(new iIRType(8)), curFunction.getRegId());
+            Entity tmp = new register(new ptrIRType(new iIRType(8)), curFunction.getRegId()); // modified
 
             ArrayList<Entity> parameter = new ArrayList<>();
             assert iType instanceof ptrIRType;
             iType = ((ptrIRType) iType).type;
-            // System.err.println(iType.getBytes());
             parameter.add(new constant(new iIRType(32), iClass.bytes + 8));
             curBlock.addInst(new callInst(tmp, tmp.type, "malloc", parameter));
             it.entity = new register(new ptrIRType(new classIRType(iClass)), curFunction.getRegId());
@@ -566,7 +659,7 @@ public class IRBuilder implements ASTVisitor {
             if (iClass.constructor) {
                 parameter = new ArrayList<>();
                 parameter.add(it.entity);
-                curBlock.addInst(new callInst(iClass.identifier + "." + iClass.identifier, parameter));
+                curBlock.addInst(new callInst(iClass.identifier + "." + iClass.identifier.substring(6), parameter));
             }
             return ;
         }
@@ -591,12 +684,12 @@ public class IRBuilder implements ASTVisitor {
         register sum = new register(new iIRType(32), curFunction.getRegId());
         curBlock.addInst(new binaryInst(binaryExprNode.binaryOpType.ADD, sum, pro, new constant(new iIRType(32), 4)));
 
-        register sizeTmpPtr = new register(new addrIRType(new iIRType(8)), curFunction.getRegId());
+        register sizeTmpPtr = new register(new ptrIRType(new iIRType(8)), curFunction.getRegId()); // modified
         ArrayList<Entity> parameter = new ArrayList<>();
         parameter.add(sum);
         curBlock.addInst(new callInst(sizeTmpPtr, sizeTmpPtr.type, "malloc", parameter));
 
-        register sizePtr = new register(new addrIRType(new iIRType(32)), curFunction.getRegId());
+        register sizePtr = new register(new ptrIRType(new iIRType(32)), curFunction.getRegId()); // modified
         curBlock.addInst(new bitcastInst(sizePtr, sizeTmpPtr));
 
         curBlock.addInst(new storeInst(sizePtr, size));
@@ -650,12 +743,12 @@ public class IRBuilder implements ASTVisitor {
             sum = new register(new iIRType(32), curFunction.getRegId());
             curBlock.addInst(new binaryInst(binaryExprNode.binaryOpType.ADD, sum, pro, new constant(new iIRType(32), 4)));
 
-            sizeTmpPtr = new register(new addrIRType(new iIRType(8)), curFunction.getRegId());
+            sizeTmpPtr = new register(new ptrIRType(new iIRType(8)), curFunction.getRegId()); // modified
             parameter = new ArrayList<>();
             parameter.add(sum);
             curBlock.addInst(new callInst(sizeTmpPtr, sizeTmpPtr.type, "malloc", parameter));
 
-            sizePtr = new register(new addrIRType(new iIRType(32)), curFunction.getRegId());
+            sizePtr = new register(new ptrIRType(new iIRType(32)), curFunction.getRegId()); // modified
             curBlock.addInst(new bitcastInst(sizePtr, sizeTmpPtr));
 
             curBlock.addInst(new storeInst(sizePtr, size));
@@ -756,7 +849,7 @@ public class IRBuilder implements ASTVisitor {
             int offset = cType.c.offsets.get(it.identifier);
             IRType type = cType.c.vars.get(offset);
 
-            register res = new register(new addrIRType(type), curFunction.getRegId());
+            register res = new register(new addrIRType(type), curFunction.getRegId()); // checked
 
             getelementptrInst inst = new getelementptrInst(res, classptr, cType);
             inst.idx.add(new constant(new iIRType(32), 0));

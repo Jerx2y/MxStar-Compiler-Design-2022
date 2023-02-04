@@ -84,7 +84,6 @@ public class InsSelector implements IRVisitor {
             curFunction.blocks.add(curBlock);
         });
 
-        // System.err.println(curFunction.name + "#");
         curFunction.entry.addBack(new jIns(curFunction.blocks.get(0).label));
 
         irfunction.blocks.forEach(b -> b.accept(this));
@@ -117,7 +116,6 @@ public class InsSelector implements IRVisitor {
     @Override
     public void visit(allocaInst it) {
         vReg rg = new vReg(curFunction.getvRegId(), it.type.getBytes());
-        System.err.println(it.type + " @ " + it.type.getBytes());
         regMap.put(it.rd, rg);
         curFunction.alloca(rg);
     }
@@ -193,7 +191,6 @@ public class InsSelector implements IRVisitor {
             assert idx instanceof constant;
             assert it.type instanceof classIRType;
             int pos = ((classIRType) it.type).c.pos.get(((constant) idx).i32);
-            System.err.println("@" + pos);
             if (pos != 0)
                 curBlock.addBack(new binaryInsSet("addi", res, getReg(it.rs), new imm(pos)));
         }

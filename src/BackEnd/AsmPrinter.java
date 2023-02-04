@@ -43,8 +43,6 @@ public class AsmPrinter implements AsmVisitor {
 
         int stkSize = it.offset + it.callSize;
 
-        System.err.println(it.offset + " @ " +  it.callSize);
-
         if (stkSize % 16 != 0)
             stkSize = (stkSize / 16 + 1) * 16;
 
