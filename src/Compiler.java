@@ -33,13 +33,13 @@ public class Compiler {
         boolean online = true;
 
         if (!online) {
-            input = new FileInputStream("testcase/t54.mx");
-            // IROutput = new PrintStream(new FileOutputStream("testcase/test.ll"));
+            input = new FileInputStream("testcase/t32.mx");
+            IROutput = new PrintStream(new FileOutputStream("testcase/test.ll"));
             BuiltinOutput = new PrintStream(new FileOutputStream("testcase/builtin.s"));
             AsmOutput = new PrintStream(new FileOutputStream("testcase/test.s"));
         } else {
             input = System.in;
-            // IROutput = new PrintStream(new FileOutputStream("test.ll"));
+            IROutput = null;
             BuiltinOutput = new PrintStream(new FileOutputStream("builtin.s"));
             AsmOutput = new PrintStream(new FileOutputStream("output.s"));
         }
@@ -65,7 +65,7 @@ public class Compiler {
             IRModule irModule = new IRModule();
             new IRCollector(gScope, irModule).visit(ASTRoot);
             new IRBuilder(gScope, irModule).visit(ASTRoot);
-            // if (!online) new IRPrinter(IROutput).visit(irModule);
+            if (!online) new IRPrinter(IROutput).visit(irModule);
 
             AsmModule asmModule = new AsmModule();
             new InsSelector(asmModule).visit(irModule);

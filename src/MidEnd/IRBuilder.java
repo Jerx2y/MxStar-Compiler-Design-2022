@@ -337,7 +337,7 @@ public class IRBuilder implements ASTVisitor {
                 lhs = loadAddrType(lhs);
 
             curBlock.addInst(new brInst(lhs, thenBlock.name, falseBlock.name));
-            curBlock.br = true;
+            // curBlock.br = true;
             curFunction.blocks.add(curBlock);
 
             curBlock = thenBlock;
@@ -348,19 +348,19 @@ public class IRBuilder implements ASTVisitor {
                 rhs = loadAddrType(rhs);
 
             curBlock.addInst(new brInst(rhs, trueBlock.name, falseBlock.name));
-            curBlock.br = true;
+            // curBlock.br = true;
             curFunction.blocks.add(curBlock);
 
             curBlock = trueBlock;
             curBlock.addInst(new storeInst(res, new constant(i1Type, true)));
             curBlock.addInst(new brInst(endBlock.name));
-            curBlock.br = true;
+            // curBlock.br = true;
             curFunction.blocks.add(curBlock);
 
             curBlock = falseBlock;
             curBlock.addInst(new storeInst(res, new constant(i1Type, false)));
             curBlock.addInst(new brInst(endBlock.name));
-            curBlock.br = true;
+            // curBlock.br = true;
             curFunction.blocks.add(curBlock);
 
             curBlock = endBlock;
@@ -386,7 +386,7 @@ public class IRBuilder implements ASTVisitor {
                 lhs = loadAddrType(lhs);
 
             curBlock.addInst(new brInst(lhs, trueBlock.name, thenBlock.name));
-            curBlock.br = true;
+            // curBlock.br = true;
             curFunction.blocks.add(curBlock);
 
             curBlock = thenBlock;
@@ -397,19 +397,19 @@ public class IRBuilder implements ASTVisitor {
                 rhs = loadAddrType(rhs);
 
             curBlock.addInst(new brInst(rhs, trueBlock.name, falseBlock.name));
-            curBlock.br = true;
+            // curBlock.br = true;
             curFunction.blocks.add(curBlock);
 
             curBlock = trueBlock;
             curBlock.addInst(new storeInst(res, new constant(i1Type, true)));
             curBlock.addInst(new brInst(endBlock.name));
-            curBlock.br = true;
+            // curBlock.br = true;
             curFunction.blocks.add(curBlock);
 
             curBlock = falseBlock;
             curBlock.addInst(new storeInst(res, new constant(i1Type, false)));
             curBlock.addInst(new brInst(endBlock.name));
-            curBlock.br = true;
+            // curBlock.br = true;
             curFunction.blocks.add(curBlock);
 
             curBlock = endBlock;
@@ -1005,7 +1005,7 @@ public class IRBuilder implements ASTVisitor {
         Entity condition = it.condition.entity;
         if (condition.type instanceof addrIRType)
             condition = loadAddrType(condition);
-        curBeginBlock.addInst(new brInst(condition, bodyBlock.name, curEndBlock.name));
+        curBlock.addInst(new brInst(condition, bodyBlock.name, curEndBlock.name));
         curFunction.blocks.add(curBlock);
 
         curBlock = bodyBlock;
